@@ -1,0 +1,7 @@
+Ruta POST /reporte
+
+- Qué hace esta ruta:
+  La ruta POST /reporte recibe datos enviados por el cliente y los procesa en el servidor. En este ejemplo, permite recibir un mensaje de reporte y mostrarlo en la respuesta del servidor.
+
+- Para qué podría servir en una aplicación comunitaria:
+  Esta ruta podría usarse para que los miembros de una comunidad envíen reportes, alertas, quejas o mensajes importantes de forma organizada. Así, la información puede recopilarse y revisarse de manera más rápida y efectiva.

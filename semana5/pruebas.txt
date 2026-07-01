@@ -1,0 +1,9 @@
+Ruta GET /
+- Responde con un mensaje de bienvenida al abrir la ruta principal del servidor.
+
+Ruta GET /saludo
+- Devuelve un saludo simple para mostrar que la ruta funciona correctamente.
+
+Ruta POST /reporte
+- Recibe un objeto JSON con un mensaje y lo devuelve en la respuesta del servidor.
+- Sirve para enviar reportes o alertas desde una aplicación o cliente.
