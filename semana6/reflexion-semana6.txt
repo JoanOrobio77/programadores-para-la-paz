@@ -1,0 +1,8 @@
+Es importante que las plataformas tecnológicas reciban reportes o información enviada por los ciudadanos de forma estructurada porque facilita el procesamiento automático de los datos.
+Cuando la información sigue un formato claro, los sistemas pueden clasificar, filtrar y priorizar las incidencias con mayor rapidez.
+Esto reduce errores humanos y mejora la calidad de los datos que se usan para tomar decisiones.
+También permite integrar la información con otras herramientas, como bases de datos y mapas, de manera más eficiente.
+Los reportes estructurados hacen posible generar estadísticas y medir el desempeño de los servicios públicos.
+Además, ayudan a que las respuestas sean más precisas y oportunas, porque el personal sabe exactamente qué se está reportando.
+Para los ciudadanos, un formato estructurado brinda mayor confianza en que su mensaje será recibido y atendido correctamente.
+En resumen, la estructura convierte la comunicación en datos útiles para la ciudad y mejora la gestión de los problemas reportados.

@@ -1,0 +1,13 @@
+{
+  "nombre": "Ana Pérez",
+  "documento": "12345678",
+  "correo": "ana.perez@correo.com",
+  "telefono": "555-1234",
+  "direccion": "Calle Falsa 123",
+  "tipoIncidencia": "bache en la calle",
+  "descripcion": "Hay un bache grande en la esquina de Calle Falsa y Avenida Siempre Viva que está causando problemas a los vehículos.",
+  "fechaReporte": "2026-07-01",
+  "adjuntos": [
+    "foto_bache_1.jpg"
+  ]
+}
