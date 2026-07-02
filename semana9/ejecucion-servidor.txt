@@ -1,0 +1,3 @@
+- Al ejecutar `node server.js`, el servidor Express se inicia y comienza a escuchar peticiones en el puerto configurado.
+- En la terminal aparece un mensaje indicando que el servidor está ejecutándose, por ejemplo: "Servidor ejecutándose en puerto 3000".
+- Cuando visitas la ruta `/estado`, el servidor responde con un mensaje o un estado que indica que la aplicación está activa y funcionando correctamente.
