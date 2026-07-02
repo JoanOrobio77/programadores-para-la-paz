@@ -1,0 +1,4 @@
+- Qué información muestra cada comando:
+  Los comandos del sistema muestran datos sobre el estado del servidor, como uso de memoria, carga del procesador, versiones del sistema operativo, espacio en disco y procesos activos.
+- Por qué es útil conocer información del sistema cuando se administra un servidor:
+  Conocer información del sistema es útil para detectar problemas, optimizar recursos, mantener la seguridad y tomar decisiones informadas sobre mantenimiento y configuraciones.
