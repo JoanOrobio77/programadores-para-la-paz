@@ -36,7 +36,8 @@ Thumbs.db
 # OneDrive temp files
 ~$*
 
-# npm package lock files if not needed
+# npm package files
+package.json
 package-lock.json
 
 yarn.lock

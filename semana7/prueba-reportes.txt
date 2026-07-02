@@ -1,0 +1,4 @@
+Cuando consultas los reportes en una API, normalmente envías una petición GET a una ruta específica como `/reportes`.
+El servidor debe responder devolviendo una lista de reportes en formato JSON, con la información registrada hasta ese momento.
+Si la ruta existe, recibirás datos estructurados que te permiten ver cada reporte, por ejemplo con campos de tipo, descripción y fecha.
+Si la ruta no existe o no está implementada, el servidor devuelve un error 404 indicando que no se puede obtener ese recurso.

@@ -1,0 +1,21 @@
+Al ejecutar el servidor Express en `server.js`, existen estas respuestas:
+
+- GET `/` devuelve el texto:
+  "Servidor Express activo en puerto 3000"
+
+- GET `/registro` devuelve el texto:
+  "Ruta /registro disponible. Envia una petición POST con JSON a esta URL."
+
+- POST `/registro` espera un JSON con `nombre` y `mensaje` y devuelve un objeto JSON como:
+  {
+    "estado": "Datos recibidos",
+    "nombre": "<valor>",
+    "mensaje": "<valor>"
+  }
+
+- POST `/incidencia` espera un JSON con `tipo` y `descripcion` y devuelve un objeto JSON como:
+  {
+    "mensaje": "Incidencia registrada",
+    "tipo": "<valor>",
+    "descripcion": "<valor>"
+  }
