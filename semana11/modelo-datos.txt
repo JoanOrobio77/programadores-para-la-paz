@@ -1,0 +1,339 @@
+MODELO DE DATOS - SEMANA 11
+Plataforma Ciudadana de Gestión de Eventos y Veeduría
+
+=== DIAGRAMA ENTIDAD-RELACIÓN (ER) ===
+
+TABLAS PRINCIPALES:
+
+┌─────────────────────┐
+│      USUARIOS       │
+├─────────────────────┤
+│ id (PK)             │
+│ email (UNIQUE)      │
+│ password_hash       │
+│ nombre              │
+│ rol (citizen/coord) │
+│ created_at          │
+│ updated_at          │
+│ is_active           │
+└─────────────────────┘
+         ↓
+      CREAR
+         ↓
+┌─────────────────────┐
+│      EVENTOS        │
+├─────────────────────┤
+│ id (PK)             │
+│ titulo              │
+│ descripcion         │
+│ fecha               │
+│ hora                │
+│ ubicacion           │
+│ cupo_maximo         │
+│ creator_id (FK)     │
+│ estado              │
+│ created_at          │
+└─────────────────────┘
+
+┌─────────────────────┐
+│   INCIDENCIAS       │
+├─────────────────────┤
+│ id (PK)             │
+│ titulo              │
+│ descripcion         │
+│ ubicacion           │
+│ tipo (infraestr...) │
+│ reporter_id (FK)    │
+│ estado              │
+│ created_at          │
+│ updated_at          │
+└─────────────────────┘
+
+┌──────────────────────────┐
+│  EVENTO_PARTICIPANTES    │
+├──────────────────────────┤
+│ id (PK)                  │
+│ evento_id (FK)           │
+│ usuario_id (FK)          │
+│ fecha_registro           │
+│ estado_asistencia        │
+│ UNIQUE(evento_id, user)  │
+└──────────────────────────┘
+
+┌──────────────────────┐
+│  ACTUALIZACIONES_INC │
+├──────────────────────┤
+│ id (PK)              │
+│ incidencia_id (FK)   │
+│ estado_anterior      │
+│ estado_nuevo         │
+│ comentario           │
+│ updated_by (FK)      │
+│ created_at           │
+└──────────────────────┘
+
+---
+
+=== ESQUEMA SQL DETALLADO ===
+
+TABLA: usuarios
+
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  nombre VARCHAR(100) NOT NULL,
+  rol VARCHAR(50) DEFAULT 'ciudadano',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Índices:
+- CREATE INDEX idx_email ON usuarios(email);
+- CREATE INDEX idx_rol ON usuarios(rol);
+
+Roles posibles:
+- ciudadano: Puede reportar incidencias, registrarse en eventos
+- coordinador: Puede actualizar estado de incidencias, crear eventos
+- administrador: Acceso total, gestión de usuarios
+
+---
+
+TABLA: eventos
+
+CREATE TABLE eventos (
+  id SERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL,
+  descripcion TEXT,
+  fecha DATE NOT NULL,
+  hora TIME NOT NULL,
+  ubicacion VARCHAR(255) NOT NULL,
+  cupo_maximo INTEGER DEFAULT 50,
+  creator_id INTEGER NOT NULL REFERENCES usuarios(id),
+  estado VARCHAR(50) DEFAULT 'programado',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Estados:
+- programado: Evento futuro
+- en_curso: Sucediendo ahora
+- finalizado: Ya pasó
+- cancelado: No se llevará a cabo
+
+Índices:
+- CREATE INDEX idx_fecha ON eventos(fecha);
+- CREATE INDEX idx_creator ON eventos(creator_id);
+
+---
+
+TABLA: incidencias
+
+CREATE TABLE incidencias (
+  id SERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL,
+  descripcion TEXT NOT NULL,
+  ubicacion VARCHAR(255) NOT NULL,
+  tipo VARCHAR(50) NOT NULL,
+  reporter_id INTEGER NOT NULL REFERENCES usuarios(id),
+  estado VARCHAR(50) DEFAULT 'pendiente',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Tipos de incidencia:
+- infraestructura: Baches, alumbrado, etc.
+- seguridad: Iluminación deficiente, zonas peligrosas
+- servicios: Agua, luz, aseo
+- ambiente: Contaminación, ruido
+- social: Problemas comunitarios
+
+Estados:
+- pendiente: Recién registrada
+- en_proceso: Siendo atendida
+- resuelto: Problema solucionado
+- no_procedente: No corresponde
+
+Índices:
+- CREATE INDEX idx_estado ON incidencias(estado);
+- CREATE INDEX idx_reporter ON incidencias(reporter_id);
+- CREATE INDEX idx_tipo ON incidencias(tipo);
+
+---
+
+TABLA: evento_participantes
+
+CREATE TABLE evento_participantes (
+  id SERIAL PRIMARY KEY,
+  evento_id INTEGER NOT NULL REFERENCES eventos(id) ON DELETE CASCADE,
+  usuario_id INTEGER NOT NULL REFERENCES usuarios(id),
+  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  estado_asistencia VARCHAR(50) DEFAULT 'registrado',
+  UNIQUE(evento_id, usuario_id)
+);
+
+Estados de asistencia:
+- registrado: Confirmó participación
+- asistió: Llegó al evento
+- ausente: No asistió
+- canceló: Se desapuntó
+
+Índices:
+- CREATE INDEX idx_evento_part ON evento_participantes(evento_id);
+- CREATE INDEX idx_usuario_part ON evento_participantes(usuario_id);
+
+---
+
+TABLA: actualizaciones_incidencia
+
+CREATE TABLE actualizaciones_incidencia (
+  id SERIAL PRIMARY KEY,
+  incidencia_id INTEGER NOT NULL REFERENCES incidencias(id) ON DELETE CASCADE,
+  estado_anterior VARCHAR(50) NOT NULL,
+  estado_nuevo VARCHAR(50) NOT NULL,
+  comentario TEXT,
+  updated_by INTEGER NOT NULL REFERENCES usuarios(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Uso: Mantener historial de cambios para auditoría
+
+Índices:
+- CREATE INDEX idx_incidencia_hist ON actualizaciones_incidencia(incidencia_id);
+
+---
+
+=== RELACIONES (RELATIONSHIPS) ===
+
+USUARIOS 1:N EVENTOS
+- Un usuario crea múltiples eventos
+- Un evento tiene un creador (usuario)
+
+USUARIOS 1:N INCIDENCIAS
+- Un usuario reporta múltiples incidencias
+- Una incidencia tiene un reportante (usuario)
+
+USUARIOS M:N EVENTOS (a través de evento_participantes)
+- Un usuario puede participar en múltiples eventos
+- Un evento puede tener múltiples participantes
+
+INCIDENCIAS 1:N ACTUALIZACIONES_INCIDENCIA
+- Una incidencia tiene múltiples actualizaciones
+- Cada actualización pertenece a una incidencia
+
+---
+
+=== INTEGRIDAD REFERENCIAL ===
+
+Restricciones de clave foránea:
+- Cuando se elimina usuario: Opción 1) Prohibir si tiene eventos/reportes activos
+                             Opción 2) Marcar como inactivo
+                             Opción 3) Reasignar a admin
+
+- Cuando se elimina evento: Evento_participantes se elimina en cascada
+
+- Cuando se elimina incidencia: Actualizaciones se eliminan en cascada
+
+---
+
+=== NORMALIZANDO EL MODELO ===
+
+1RA FORMA NORMAL (1NF): Atributos atómicos
+- ✓ Cada celda tiene un valor único
+- ✓ No hay listas en celdas
+
+2DA FORMA NORMAL (2NF): Dependencia funcional total
+- ✓ No hay dependencias parciales
+- ✓ evento_participantes tiene su propia tabla
+
+3RA FORMA NORMAL (3NF): Sin dependencias transitivas
+- ✓ No hay datos derivados almacenados
+- ✓ Timestamps calculados en consultas
+
+DESNORMALIZACIÓN (si aplica):
+- Contar participantes: Calculado en tiempo real (no almacenado)
+- Conteo de incidencias: Cacheable, no crítico
+
+---
+
+=== DATOS DE EJEMPLO (FICTICIOS - NO SENSIBLES) ===
+
+Usuarios:
+```
+id | email                    | nombre          | rol
+ 1 | juan@ejemplo.com        | Juan Pérez      | ciudadano
+ 2 | maria@ejemplo.com       | María García    | coordinador
+ 3 | admin@ejemplo.com       | Carlos López    | administrador
+```
+
+Eventos:
+```
+id | titulo                 | fecha      | cupo | creator_id
+ 1 | Taller de Python      | 2026-07-25 | 30   | 2
+ 2 | Meetup Frontend       | 2026-08-01 | 50   | 2
+```
+
+Incidencias:
+```
+id | titulo              | tipo          | estado    | reporter_id
+ 1 | Bache en calle 5    | infraestructura | pendiente | 1
+ 2 | Falta alumbrado     | seguridad      | en_proceso | 1
+```
+
+---
+
+=== OPERACIONES COMUNES ===
+
+CREAR USUARIO:
+INSERT INTO usuarios (email, password_hash, nombre, rol)
+VALUES ('newuser@ejemplo.com', '$2b$10$...', 'Nuevo Usuario', 'ciudadano');
+
+LISTAR EVENTOS PRÓXIMOS:
+SELECT * FROM eventos 
+WHERE fecha >= CURRENT_DATE 
+ORDER BY fecha ASC;
+
+CONTAR PARTICIPANTES DE EVENTO:
+SELECT COUNT(*) FROM evento_participantes 
+WHERE evento_id = 1 AND estado_asistencia = 'asistió';
+
+HISTÓRICO DE INCIDENCIA:
+SELECT * FROM actualizaciones_incidencia 
+WHERE incidencia_id = 1 
+ORDER BY created_at DESC;
+
+REGISTRAR EN EVENTO:
+INSERT INTO evento_participantes (evento_id, usuario_id, estado_asistencia)
+VALUES (1, 5, 'registrado');
+
+---
+
+=== CONSIDERACIONES DE PRIVACIDAD ===
+
+⚠️ CAMPOS A PROTEGER:
+- Nunca almacenar contraseñas en texto plano
+- Encriptar datos personales si aplica
+- No almacenar IP o ubicación GPS exacta de usuarios
+- Reporter de incidencia: Visible solo para admin/coordinadores
+
+✅ SEGURIDAD:
+- Usar prepared statements (evitar SQL injection)
+- Validar tipos de datos en entrada
+- Límites de tamaño en campos texto
+- Constraints de fecha (no fechas en el futuro lejano)
+
+---
+
+=== MIGRATIONS (Versión de Schema) ===
+
+v1.0: Creación inicial (usuarios, eventos, incidencias)
+v1.1: Agregar tabla evento_participantes
+v1.2: Agregar tabla actualizaciones_incidencia
+v1.3: Agregar índices para performance
+v1.4: Agregar campo is_active en usuarios
+
+---
+
+Fecha: 2026-07-16
+Estado: Documentado

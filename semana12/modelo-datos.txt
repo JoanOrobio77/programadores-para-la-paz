@@ -1,0 +1,380 @@
+MODELO DE DATOS - SEMANA 12
+"Petición en 3 Clics": Esquema de Base de Datos
+
+=== DIAGRAMA ENTIDAD-RELACIÓN ===
+
+┌──────────────────────┐
+│      USUARIOS        │
+├──────────────────────┤
+│ id (PK)              │
+│ email (UNIQUE)       │
+│ password_hash        │
+│ nombre               │
+│ rol                  │
+│ created_at           │
+│ is_active            │
+└──────────────────────┘
+           │
+           │ Crea
+           ↓
+┌──────────────────────┐
+│     PETICIONES       │
+├──────────────────────┤
+│ id (PK)              │
+│ titulo               │
+│ descripcion          │
+│ meta_apoyos          │
+│ apoyos_actuales      │
+│ creator_id (FK)      │
+│ estado               │
+│ categoria            │
+│ created_at           │
+│ updated_at           │
+│ completed_at         │
+└──────────────────────┘
+           │
+           │ Tiene muchos
+           ↓
+┌──────────────────────┐
+│      APOYOS          │
+├──────────────────────┤
+│ id (PK)              │
+│ peticion_id (FK)     │
+│ nombre               │
+│ email                │
+│ fecha_apoyo          │
+│ is_anonimo           │
+│ ip_address           │
+│ verificado           │
+│ created_at           │
+└──────────────────────┘
+
+           │
+           ↓
+┌──────────────────────┐
+│  DOCUMENTOS_PDF      │
+├──────────────────────┤
+│ id (PK)              │
+│ peticion_id (FK)     │
+│ url_descarga         │
+│ fecha_generacion     │
+│ total_apoyos         │
+│ hash_verificacion    │
+│ created_at           │
+└──────────────────────┘
+
+           │
+           ↓
+┌──────────────────────┐
+│   NOTIFICACIONES     │
+├──────────────────────┤
+│ id (PK)              │
+│ peticion_id (FK)     │
+│ tipo                 │
+│ porcentaje           │
+│ enviada_at           │
+│ canal                │
+│ created_at           │
+└──────────────────────┘
+
+---
+
+=== ESQUEMA SQL DETALLADO ===
+
+TABLA: usuarios
+
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  nombre VARCHAR(100) NOT NULL,
+  rol VARCHAR(50) DEFAULT 'ciudadano',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Roles:
+- ciudadano: Apoya peticiones, ve públicamente
+- organizador: Crea y monitorea peticiones
+- administrador: Modera, gestiona todo
+
+Índices:
+- CREATE INDEX idx_email ON usuarios(email);
+- CREATE INDEX idx_rol ON usuarios(rol);
+
+---
+
+TABLA: peticiones
+
+CREATE TABLE peticiones (
+  id SERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL,
+  descripcion TEXT NOT NULL,
+  meta_apoyos INTEGER NOT NULL DEFAULT 100,
+  apoyos_actuales INTEGER DEFAULT 0,
+  creator_id INTEGER NOT NULL REFERENCES usuarios(id),
+  estado VARCHAR(50) DEFAULT 'draft',
+  categoria VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  completed_at TIMESTAMP NULL,
+  rejected_at TIMESTAMP NULL,
+  razon_rechazo TEXT
+);
+
+Estados:
+- draft: En creación
+- pendiente_revision: Esperando admin
+- activa: Aceptando apoyos
+- completada: Meta alcanzada
+- rechazada: No cumplió criterios
+- cancelada: Cancelada por organizador
+
+Categorías:
+- ambiente
+- seguridad
+- servicios
+- infraestructura
+- educacion
+- salud
+- otro
+
+Índices:
+- CREATE INDEX idx_creator ON peticiones(creator_id);
+- CREATE INDEX idx_estado ON peticiones(estado);
+- CREATE INDEX idx_categoria ON peticiones(categoria);
+- CREATE INDEX idx_created_at ON peticiones(created_at);
+
+---
+
+TABLA: apoyos
+
+CREATE TABLE apoyos (
+  id SERIAL PRIMARY KEY,
+  peticion_id INTEGER NOT NULL REFERENCES peticiones(id) ON DELETE CASCADE,
+  nombre VARCHAR(100),
+  email VARCHAR(255),
+  fecha_apoyo TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  is_anonimo BOOLEAN DEFAULT false,
+  ip_address VARCHAR(45),
+  verificado BOOLEAN DEFAULT false,
+  token_verificacion VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(peticion_id, email) -- Evita duplicados si hay email
+);
+
+Restricciones:
+- Si is_anonimo = true: nombre y email pueden ser NULL
+- Si is_anonimo = false: email debe ser UNIQUE por petición
+- Registrar IP para detectar spam
+
+Índices:
+- CREATE INDEX idx_peticion_apoyos ON apoyos(peticion_id);
+- CREATE INDEX idx_email ON apoyos(email);
+- CREATE INDEX idx_verificado ON apoyos(verificado);
+
+---
+
+TABLA: documentos_pdf
+
+CREATE TABLE documentos_pdf (
+  id SERIAL PRIMARY KEY,
+  peticion_id INTEGER NOT NULL REFERENCES peticiones(id),
+  url_descarga VARCHAR(500),
+  ruta_archivo VARCHAR(500),
+  fecha_generacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  total_apoyos INTEGER NOT NULL,
+  hash_verificacion VARCHAR(64),
+  tamaño_bytes INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Uso:
+- Almacena referencia al PDF generado
+- hash_verificacion para integridad
+- Permite regenerar si es necesario
+
+Índices:
+- CREATE INDEX idx_peticion_pdf ON documentos_pdf(peticion_id);
+
+---
+
+TABLA: notificaciones
+
+CREATE TABLE notificaciones (
+  id SERIAL PRIMARY KEY,
+  peticion_id INTEGER NOT NULL REFERENCES peticiones(id),
+  tipo VARCHAR(50),
+  porcentaje_alcanzado INTEGER,
+  enviada_at TIMESTAMP,
+  canal VARCHAR(50),
+  destinatario VARCHAR(255),
+  estado VARCHAR(50) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Tipos de notificación:
+- hito_25: Alcanzó 25%
+- hito_50: Alcanzó 50%
+- hito_75: Alcanzó 75%
+- hito_100: META COMPLETADA
+- nuevo_apoyo: Cada apoyo (si está configurado)
+
+Canales:
+- email
+- telegram
+- push
+- en_app
+
+Índices:
+- CREATE INDEX idx_peticion_notif ON notificaciones(peticion_id);
+- CREATE INDEX idx_tipo ON notificaciones(tipo);
+
+---
+
+=== INTEGRIDAD REFERENCIAL ===
+
+Restricciones:
+- Petición sin creador: PROHIBIDO (NOT NULL)
+- Apoyo sin petición: Se elimina en cascada (ON DELETE CASCADE)
+- Usuario activo puede eliminar solo en draft
+
+---
+
+=== DATOS DE EJEMPLO ===
+
+Usuarios:
+```
+id | email               | nombre          | rol
+1  | juan@ejemplo.com    | Juan Pérez      | ciudadano
+2  | maria@ejemplo.com   | María García    | organizador
+3  | admin@ejemplo.com   | Carlos López    | administrador
+4  | anonimo_1           | NULL            | ciudadano (anónimo)
+```
+
+Peticiones:
+```
+id | titulo                  | meta | apoyos | estado    | creator_id
+1  | Mejorar parque central  | 100  | 100    | completada| 2
+2  | Aumento de buses        | 50   | 23     | activa    | 2
+3  | Iluminación en calle 5  | 75   | 0      | draft     | 2
+```
+
+Apoyos (primera petición):
+```
+id | peticion_id | nombre        | email            | is_anonimo
+1  | 1           | Juan Pérez    | juan@ejemplo.com | false
+2  | 1           | María González| NULL             | true
+3  | 1           | Pedro López   | NULL             | true
+...
+100| 1           | Sofia Martín  | sofia@ejemplo.com| false
+```
+
+---
+
+=== OPERACIONES FRECUENTES ===
+
+CREAR PETICIÓN:
+INSERT INTO peticiones 
+(titulo, descripcion, meta_apoyos, creator_id, estado)
+VALUES ('Mejorar parque', '...', 100, 2, 'draft');
+
+AGREGAR APOYO:
+INSERT INTO apoyos (peticion_id, nombre, email, is_anonimo)
+VALUES (1, 'Juan', NULL, true);
+
+UPDATE peticiones 
+SET apoyos_actuales = apoyos_actuales + 1
+WHERE id = 1;
+
+OBTENER PROGRESO:
+SELECT apoyos_actuales, meta_apoyos, 
+       ROUND(apoyos_actuales * 100.0 / meta_apoyos, 2) as porcentaje
+FROM peticiones
+WHERE id = 1;
+
+VERIFICAR SI HITO ALCANZADO:
+SELECT 
+  CASE 
+    WHEN apoyos_actuales >= meta_apoyos * 0.25 THEN '25%'
+    WHEN apoyos_actuales >= meta_apoyos * 0.50 THEN '50%'
+    WHEN apoyos_actuales >= meta_apoyos * 0.75 THEN '75%'
+    WHEN apoyos_actuales >= meta_apoyos THEN '100%'
+  END as hito
+FROM peticiones WHERE id = 1;
+
+LISTAR PETICIONES ACTIVAS:
+SELECT * FROM peticiones 
+WHERE estado = 'activa' 
+ORDER BY apoyos_actuales DESC
+LIMIT 10;
+
+CONTAR APOYOS POR PETICIÓN:
+SELECT peticion_id, COUNT(*) as total
+FROM apoyos
+GROUP BY peticion_id
+ORDER BY total DESC;
+
+---
+
+=== CONSIDERACIONES DE PRIVACIDAD ===
+
+DATOS A MINIMIZAR:
+- Nombre: Opcional, puede ser anónimo
+- Email: Solo para confirmación
+- IP: Registrada pero no mostrada públicamente
+- Documentos de identidad: NO almacenar
+
+DATOS SENSIBLES:
+- Password: Hashear siempre
+- Email de organizador: Solo para staff
+- Direcciones: NO almacenar
+
+ANONIMATO:
+- Permitir apoyo sin nombre
+- Permitir sin email
+- No recolectar más de lo necesario
+
+---
+
+=== INDICES PARA PERFORMANCE ===
+
+Acceso frecuente:
+- Peticiones por estado
+- Apoyos por petición
+- Usuarios por email
+
+Índices agregados:
+- CREATE INDEX idx_peticion_estado_fecha 
+  ON peticiones(estado, created_at);
+
+- CREATE INDEX idx_apoyo_peticion_fecha 
+  ON apoyos(peticion_id, created_at);
+
+---
+
+=== BACKUPS Y AUDITORÍA ===
+
+TABLA ADICIONAL: auditoría
+
+CREATE TABLE auditoria (
+  id SERIAL PRIMARY KEY,
+  usuario_id INTEGER,
+  tabla VARCHAR(50),
+  operacion VARCHAR(10), -- INSERT, UPDATE, DELETE
+  id_registro INTEGER,
+  cambios_json TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Registra:
+- Quién hizo qué
+- Cuándo
+- Qué cambió
+- Completa trazabilidad
+
+---
+
+Fecha: 2026-07-16
+Estado: Documentado

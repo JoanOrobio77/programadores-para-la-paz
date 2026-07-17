@@ -1,0 +1,276 @@
+BACKLOG - SEMANA 10
+Sistema de Gestión de Eventos Comunitarios
+
+=== BACKLOG PRODUCT (Priorizado) ===
+
+ÉPICA 1: AUTENTICACIÓN Y SEGURIDAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ALTA] TASK 1.1: Crear modelo de usuarios en base de datos
+Descripción: Diseñar schema de tabla users con campos: id, email, password_hash, nombre, createdAt
+Criterios de aceptación:
+  ✓ Campo email única y validada
+  ✓ Contraseña encriptada con bcrypt
+  ✓ Timestamps automáticos
+Estimación: 5 puntos
+
+[ALTA] TASK 1.2: Implementar autenticación JWT
+Descripción: Crear endpoints de login/register con tokens JWT
+Criterios de aceptación:
+  ✓ Registro con email y contraseña
+  ✓ Login retorna token válido
+  ✓ Token válido por 7 días
+  ✓ Logout limpia sesión
+Estimación: 8 puntos
+
+[ALTA] TASK 1.3: Crear middleware de autenticación
+Descripción: Verificar token JWT en cada petición protegida
+Criterios de aceptación:
+  ✓ Rechaza peticiones sin token
+  ✓ Valida token no expirado
+  ✓ Adjunta usuario al request
+Estimación: 3 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ÉPICA 2: GESTIÓN DE EVENTOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ALTA] TASK 2.1: Crear modelo de eventos
+Descripción: Schema de tabla events: id, titulo, descripcion, fecha, hora, ubicacion, creatorId
+Criterios de aceptación:
+  ✓ Validación de fechas futuras
+  ✓ Relación con usuario creador
+  ✓ Campos opcionales permitidos
+Estimación: 5 puntos
+
+[ALTA] TASK 2.2: API para crear evento
+Descripción: POST /api/events con validación de datos
+Criterios de aceptación:
+  ✓ Solo usuarios autenticados pueden crear
+  ✓ Valida todos los campos requeridos
+  ✓ Retorna evento creado con ID
+Estimación: 5 puntos
+
+[ALTA] TASK 2.3: API para listar eventos
+Descripción: GET /api/events con filtrado y paginación
+Criterios de aceptación:
+  ✓ Lista eventos ordenados por fecha
+  ✓ Soporta paginación (limit, offset)
+  ✓ Incluye datos del organizador
+  ✓ No requiere autenticación
+Estimación: 5 puntos
+
+[MEDIA] TASK 2.4: API para obtener evento específico
+Descripción: GET /api/events/:id con detalles completos
+Criterios de aceptación:
+  ✓ Retorna evento con participantes
+  ✓ Retorna 404 si no existe
+  ✓ Información de organizador
+Estimación: 3 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ÉPICA 3: REGISTRO EN EVENTOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ALTA] TASK 3.1: Crear relación eventos-participantes
+Descripción: Tabla intermedia para usuarios registrados en eventos
+Criterios de aceptación:
+  ✓ Previene duplicados (unique constraint)
+  ✓ Registra fecha de registro
+  ✓ Permite cancelación
+Estimación: 3 puntos
+
+[ALTA] TASK 3.2: API para registrar usuario en evento
+Descripción: POST /api/events/:id/register
+Criterios de aceptación:
+  ✓ Solo usuarios autenticados
+  ✓ Valida que evento existe
+  ✓ Valida cupo disponible
+  ✓ Retorna confirmación con detalles
+Estimación: 5 puntos
+
+[MEDIA] TASK 3.3: API para cancelar registro
+Descripción: DELETE /api/events/:id/register
+Criterios de aceptación:
+  ✓ Solo el registrado puede cancelar
+  ✓ Libera espacio en cupo
+  ✓ Registra cancelación para análisis
+Estimación: 3 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ÉPICA 4: NOTIFICACIONES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[MEDIA] TASK 4.1: Crear modelo de preferencias de notificación
+Descripción: Tabla para email, push, Telegram (no sensible)
+Criterios de aceptación:
+  ✓ Cada usuario configura sus preferencias
+  ✓ Por defecto todas habilitadas
+  ✓ Respetar no-molestar después de X hora
+Estimación: 3 puntos
+
+[MEDIA] TASK 4.2: Servicio de notificaciones por email
+Descripción: Integración con Nodemailer (SMTP de prueba)
+Criterios de aceptación:
+  ✓ Template HTML profesional
+  ✓ Respetar preferencias de usuario
+  ✓ Log de envíos para auditoría
+Estimación: 5 puntos
+
+[BAJA] TASK 4.3: Integración básica con Telegram Bot
+Descripción: Enviar notificaciones a canal sin datos sensibles
+Criterios de aceptación:
+  ✓ Usar token de prueba
+  ✓ Mensaje breve y útil
+  ✓ Sin información personal
+Estimación: 5 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ÉPICA 5: REPORTES Y ANÁLISIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[MEDIA] TASK 5.1: Estadísticas por evento
+Descripción: GET /api/events/:id/stats para organizador
+Criterios de aceptación:
+  ✓ Solo organizador puede ver
+  ✓ Total registros, confirmaciones, cancelaciones
+  ✓ Tasa de asistencia
+Estimación: 5 puntos
+
+[BAJA] TASK 5.2: Generar reporte CSV
+Descripción: Exportar listado de participantes
+Criterios de aceptación:
+  ✓ Solo para organizador del evento
+  ✓ Formato CSV estándar
+  ✓ Incluye nombre, email, fecha de registro
+Estimación: 5 puntos
+
+[BAJA] TASK 5.3: Dashboard de estadísticas generales
+Descripción: Resumen de plataforma (solo admin)
+Criterios de aceptación:
+  ✓ Total eventos, usuarios, registros
+  ✓ Eventos próximos
+  ✓ Participación por mes
+Estimación: 8 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ÉPICA 6: INTERFAZ DE USUARIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ALTA] TASK 6.1: Página de login/registro
+Descripción: Formularios React con validación
+Criterios de aceptación:
+  ✓ Validación cliente-lado
+  ✓ Mensajes de error claros
+  ✓ Responsive mobile
+Estimación: 5 puntos
+
+[ALTA] TASK 6.2: Página de listado de eventos
+Descripción: Listado con búsqueda, filtros, paginación
+Criterios de aceptación:
+  ✓ Búsqueda por título
+  ✓ Filtro por fecha
+  ✓ Cards atractivas
+  ✓ Indicador de disponibilidad
+Estimación: 8 puntos
+
+[ALTA] TASK 6.3: Página detalle de evento
+Descripción: Vista completa con botón de registro
+Criterios de aceptación:
+  ✓ Información completa del evento
+  ✓ Datos del organizador
+  ✓ Lista de participantes (sin datos sensibles)
+  ✓ Botón de registro/cancelación
+Estimación: 8 puntos
+
+[MEDIA] TASK 6.4: Panel de usuario
+Descripción: Eventos donde está registrado, historial
+Criterios de aceptación:
+  ✓ Próximos eventos
+  ✓ Eventos pasados
+  ✓ Opción para cancelar registro
+Estimación: 5 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ÉPICA 7: VEEDURÍA Y GESTIÓN DE INCIDENCIAS COMUNITARIAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ALTA] TASK 7.1: Crear modelo de incidencias
+Descripción: Schema de tabla incidents: id, titulo, descripcion, ubicacion, foto, estado, ciudadanoId, createdAt
+Historia de usuario: Como ciudadano quiero registrar una incidencia para dejar evidencia del caso.
+Criterios de aceptación:
+  ✓ Ciudadano puede crear incidencia sin ser experto
+  ✓ Permite adjuntar foto (geolocalización opcional)
+  ✓ Clasificación de tipo (seguridad, servicios, infraestructura, etc.)
+  ✓ Validación de datos sensibles antes de guardar
+Estimación: 5 puntos
+
+[ALTA] TASK 7.2: API para reportar incidencia
+Descripción: POST /api/incidents con validación y almacenamiento seguro
+Historia de usuario: Como ciudadano quiero registrar una incidencia para dejar evidencia del caso.
+Criterios de aceptación:
+  ✓ Endpoint POST /api/incidents
+  ✓ Validación de datos no sensibles
+  ✓ Asignación automática de ID único
+  ✓ Retorna confirmación con número de reporte
+Estimación: 5 puntos
+
+[MEDIA] TASK 7.3: Notificación en Telegram para coordinadores
+Descripción: Alertas a grupo de Telegram cuando hay nueva incidencia
+Historia de usuario: Como coordinador quiero recibir una alerta en Telegram para revisar un nuevo reporte.
+Criterios de aceptación:
+  ✓ Envío automático al registrar incidencia
+  ✓ Mensaje con: ID reporte, tipo, ubicación, estado
+  ✓ Botón para revisar en plataforma
+  ✓ Solo información pública, sin datos sensibles
+  ✓ Respetar horario de notificaciones
+Estimación: 5 puntos
+
+[MEDIA] TASK 7.4: Panel de reportes para seguimiento
+Descripción: Consulta de reportes con filtros de estado y tipo
+Historia de usuario: Como miembro del equipo quiero consultar reportes para hacer seguimiento.
+Criterios de aceptación:
+  ✓ GET /api/incidents con filtrado por estado
+  ✓ Filtro por tipo de incidencia
+  ✓ Filtro por fecha
+  ✓ Paginación de resultados
+  ✓ Estadísticas: pendientes, en proceso, resueltas
+  ✓ Solo mostrar datos no sensibles
+Estimación: 5 puntos
+
+[MEDIA] TASK 7.5: Actualización de estado de incidencia
+Descripción: Permitir cambiar estado (pendiente → en proceso → resuelto)
+Historia de usuario: Como coordinador quiero actualizar el estado de una incidencia para informar al ciudadano.
+Criterios de aceptación:
+  ✓ PATCH /api/incidents/:id/status
+  ✓ Solo coordinador/admin puede actualizar
+  ✓ Historial de cambios
+  ✓ Notificación al ciudadano reportante
+  ✓ Permite agregar comentario de seguimiento
+Estimación: 5 puntos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+=== MÉTRICAS DEL BACKLOG ===
+
+Total de historias: 27
+Puntos totales: 151
+Prioridad Alta: 14 historias (78 puntos)
+Prioridad Media: 11 historias (60 puntos)
+Prioridad Baja: 2 historias (13 puntos)
+
+RELEASE 1 (MVP): Épicas 1, 2, 3 = 58 puntos
+RELEASE 2: Épicas 4, 5, 7 = 73 puntos
+RELEASE 3: Épica 6 = 20 puntos
+
+Velocidad estimada: 20 puntos/semana
+Tiempo estimado: 7-8 semanas
+
+---
+Última actualización: 2026-07-16

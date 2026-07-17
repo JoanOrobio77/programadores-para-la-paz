@@ -1,0 +1,148 @@
+EJERCICIOS PRÁCTICOS - SEMANA 10
+
+=== Ejercicio 1: Modelado de Backlog y Historias de Usuario ===
+
+Objetivo: Crear un backlog y historias de usuario para un proyecto ficticio.
+
+PROYECTO: Sistema de Gestión de Eventos Comunitarios
+
+BACKLOG (Priorizado):
+
+1. [ALTA] Autenticación de usuarios
+   Historia: Como usuario nuevo, quiero crear una cuenta segura con email y contraseña, 
+   para acceder a los eventos disponibles en la plataforma.
+
+2. [ALTA] Listado de eventos
+   Historia: Como visitante, quiero ver un listado de eventos próximos, 
+   para decidir a cuál asistir.
+
+3. [ALTA] Registro en eventos
+   Historia: Como usuario registrado, quiero registrarme a un evento específico, 
+   para asegurar mi participación.
+
+4. [MEDIA] Notificaciones por email
+   Historia: Como asistente, quiero recibir recordatorios por email antes de un evento, 
+   para no olvidar mi asistencia.
+
+5. [MEDIA] Generación de reportes
+   Historia: Como organizador, quiero generar reportes de asistencia, 
+   para analizar la participación en eventos.
+
+6. [BAJA] Personalización de perfil
+   Historia: Como usuario, quiero actualizar mi perfil con avatar e información personal, 
+   para mejorar mi presencia en la plataforma.
+
+---
+
+=== Ejercicio 2: Planificación de Iteración (Sprint) ===
+
+SPRINT 1 (2 semanas):
+Objetivo: MVP con autenticación y listado de eventos
+
+Tareas:
+- Backend: Configurar base de datos y modelos de usuarios
+- Backend: Implementar autenticación con JWT
+- Backend: Crear API para listar eventos
+- Frontend: Crear formulario de login/registro
+- Frontend: Crear página de listado de eventos
+- Testing: Pruebas unitarias de autenticación
+
+Estimación: 40 puntos de historia
+Recursos: 2 desarrolladores
+
+---
+
+=== Ejercicio 3: Automatización con n8n (Ejemplo de Configuración) ===
+
+FLUJO 1: Notificación de nuevo evento
+Disparador: Cuando se crea un evento en la base de datos
+Acciones:
+1. Consultar lista de usuarios suscritos
+2. Crear mensaje personalizado para cada usuario
+3. Enviar email de notificación
+4. Registrar log de notificación
+
+FLUJO 2: Recordatorio de evento
+Disparador: Cada día a las 9:00 AM
+Acciones:
+1. Buscar eventos que ocurran en las próximas 24 horas
+2. Obtener usuarios registrados en esos eventos
+3. Enviar recordatorio por email/push
+4. Registrar estadísticas de recordatorios
+
+FLUJO 3: Reporte semanal de estadísticas
+Disparador: Cada lunes a las 8:00 AM
+Acciones:
+1. Contar registros nuevos
+2. Contar asistentes por evento
+3. Calcular tasa de asistencia
+4. Generar resumen en PDF
+5. Enviar reporte a administradores
+
+DATOS A USAR (FICTICIOS - NO SENSIBLES):
+- Eventos: "Taller de Python", "Meetup Frontend", "Charla de DevOps"
+- Usuarios: usuario1@ejemplo.com, usuario2@ejemplo.com, usuario3@ejemplo.com
+- URLs de ejemplo: http://localhost:3000
+
+---
+
+=== Ejercicio 4: Integración con Telegram (Ejemplo de Configuración) ===
+
+CASO DE USO: Notificaciones de eventos en canal de Telegram
+
+CONFIGURACIÓN (CONCEPTUAL):
+1. Crear un Bot de Telegram (obtener token de prueba - NO PUBLICAR)
+2. Crear un canal/grupo para notificaciones
+3. Conectar n8n con Telegram Bot API
+
+FLUJOS DE NOTIFICACIÓN:
+
+FLUJO A: Nuevo evento
+Mensaje: "📢 Nuevo evento disponible: [Nombre] | [Fecha] | [Hora]"
+Botón: "Registrarme"
+
+FLUJO B: Recordatorio de evento
+Mensaje: "⏰ Recordatorio: Tu evento [Nombre] comienza en 24 horas"
+Botón: "Ver detalles"
+
+FLUJO C: Confirmación de registro
+Mensaje: "✅ Te has registrado exitosamente en [Evento]"
+Contenido: Link a Google Calendar con evento agregado
+
+FLUJO D: Anuncio comunitario
+Mensaje: "📣 [Anuncio importante para la comunidad]"
+Ejemplo: Cambios en la plataforma, actualizaciones, eventos especiales
+
+---
+
+=== Ejercicio 5: Checklist de Buenas Prácticas ===
+
+SEGURIDAD:
+☑ No incluir tokens reales de Telegram en el código
+☑ No compartir API keys de n8n o servicios
+☑ Usar variables de entorno para credenciales
+☑ Validar datos de entrada en formularios
+☑ Encriptar contraseñas de usuarios
+
+AUTOMATIZACIÓN:
+☑ Diseñar flujos reutilizables
+☑ Incluir manejo de errores en cada paso
+☑ Registrar logs de ejecución
+☑ Establecer reintentos automáticos
+☑ Monitorear fallas de flujos
+
+NOTIFICACIONES:
+☑ Respetar preferencias de comunicación del usuario
+☑ No enviar spam o notificaciones excesivas
+☑ Permitir desuscripción fácil
+☑ Usar lenguaje claro y conciso
+☑ Incluir información relevante y actionable
+
+ITERACIÓN:
+☑ Revisar feedback de usuarios
+☑ Refinar historias de usuario basado en aprendizaje
+☑ Ajustar estimaciones en próximas iteraciones
+☑ Retrospectiva de sprint
+☑ Celebrar logros del equipo
+
+---

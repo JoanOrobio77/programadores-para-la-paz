@@ -1,0 +1,350 @@
+FLUJO DEL SISTEMA - SEMANA 12
+"Petición en 3 Clics": Arquitectura y Procesos
+
+=== DIAGRAMA DE FLUJO GENERAL ===
+
+┌─────────────────────────────────────────────────────────┐
+│              PLATAFORMA "PETICIÓN EN 3 CLICS"           │
+└─────────────────────────────────────────────────────────┘
+
+ACTOR 1: CIUDADANO COMÚN
+┌────────────────────────────────────┐
+│  1. Visita plataforma              │
+│  2. Ve peticiones disponibles      │
+│  3. Lee descripción de causa       │
+│  4. Agrega su nombre (opcional)    │
+│  5. Apoya con 1 click              │
+│  6. Recibe confirmación            │
+│  7. Comparte con amigos            │
+└────────────────────────────────────┘
+
+ACTOR 2: ORGANIZACIÓN/COORDINADOR
+┌────────────────────────────────────┐
+│  1. Crea nueva petición            │
+│  2. Define meta de apoyos          │
+│  3. Descripción clara del problema │
+│  4. Comparte enlace en redes       │
+│  5. Monitorea progreso             │
+│  6. Genera PDF cuando alcanza meta │
+│  7. Presenta a autoridades        │
+└────────────────────────────────────┘
+
+ACTOR 3: ADMINISTRADOR
+┌────────────────────────────────────┐
+│  1. Modera peticiones              │
+│  2. Valida contenido               │
+│  3. Monitorea spam/abuso           │
+│  4. Genera reportes                │
+│  5. Gestiona usuarios              │
+│  6. Configura sistema              │
+└────────────────────────────────────┘
+
+---
+
+=== FLUJO PASO A PASO ===
+
+PASO 1: CREAR PETICIÓN
+
+Usuario organizador ingresa:
+┌──────────────────────────────┐
+│ Título: "Mejorar parque..."  │
+│ Descripción: "El parque..."  │
+│ Meta de apoyos: 100          │
+│ Categoría: Ambiente          │
+│ Email contacto: org@...      │
+│ [CREAR]                      │
+└──────────────────────────────┘
+
+Sistema:
+✓ Valida datos
+✓ Crea registro en BD
+✓ Genera ID único: PET-2026-001
+✓ Estado: Pendiente revisión
+✓ Envía notificación a admin
+
+Admin revisa:
+✓ Valida contenido (no spam)
+✓ Aprueba o rechaza
+✓ Si aprueba: Estado = Activo
+✓ Genera URL pública: peticion.local/PET-2026-001
+
+---
+
+PASO 2: COMPARTIR PETICIÓN
+
+Organizador recibe enlace:
+https://peticion.local/PET-2026-001
+
+Comparte en:
+- Redes sociales (Facebook, Twitter)
+- Grupos de WhatsApp
+- Email
+- Carteles en comunidad
+- Volantes con QR
+
+Cada compartida potencial = nuevos apoyos
+
+---
+
+PASO 3: CIUDADANO APOYA
+
+Usuario (sin login):
+1. Abre enlace de petición
+2. Ve información clara
+3. Lee descripción
+4. Ve contador: "45/100 apoyos"
+5. Ingresa nombre (opcional, puede ser anónimo)
+6. Click en "APOYO" o "ME SUMO"
+
+Sistema:
+✓ Registra apoyo
+✓ Incrementa contador (46/100)
+✓ Muestra confirmación: "¡Gracias por tu apoyo!"
+✓ Ofrece compartir
+✓ Envía email de confirmación (si ingresó email)
+
+Base de datos:
+INSERT INTO apoyos (peticion_id, nombre, email, fecha)
+VALUES (1, 'Juan Pérez', null, NOW())
+
+---
+
+PASO 4: NOTIFICACIÓN AUTOMÁTICA
+
+Cuando llega a hito (25%, 50%, 75%, 100%):
+
+Sistema verifica:
+- 25 apoyos → Hito 25% alcanzado
+- 50 apoyos → Hito 50% alcanzado
+- 75 apoyos → Hito 75% alcanzado
+- 100 apoyos → ¡META COMPLETADA!
+
+Acciones automáticas (n8n):
+1. Notificar al organizador: "¡Has alcanzado 50 apoyos!"
+2. Mensajde Telegram: "Petición 'Mejorar parque' está a mitad de meta"
+3. Email a coordinadores: "Acelerar difusión"
+4. Si meta completa: Dispara generación de PDF
+
+---
+
+PASO 5: GENERAR PDF
+
+Cuando se alcanza meta (100 apoyos):
+
+Sistema automáticamente:
+1. Genera PDF con:
+   - Título de petición
+   - Descripción completa
+   - Fecha creación
+   - Fecha completada
+   - Motivo de la petición
+   - Listado de 100 firmantes
+   - Contador oficial: "100/100 apoyos"
+   - Sello/código QR de verificación
+
+2. Envía PDF al organizador
+
+3. Genera link descargable
+
+4. Registra en auditoría
+
+Contenido del PDF (ejemplo):
+```
+═════════════════════════════════════
+  PETICIÓN CIUDADANA FORMAL
+
+Título: Mejora urgente del parque
+       central de la comunidad
+
+Meta alcanzada: 100 apoyos
+
+Descripción:
+Los vecinos del barrio La Cruz solicitan
+urgentemente la rehabilitación del parque
+central. Está deteriorado, sin iluminación,
+representa riesgo de seguridad.
+
+Solicitamos:
+- Reparación de infraestructura
+- Iluminación LED
+- Áreas recreativas seguras
+- Mantenimiento permanente
+
+FIRMANTES: 100 ciudadanos
+
+Generado: 16/07/2026
+Verificable en: https://peticion.local/PET-2026-001
+═════════════════════════════════════
+```
+
+---
+
+PASO 6: PRESENTACIÓN A AUTORIDADES
+
+Organizador:
+1. Descarga PDF
+2. Imprime copias
+3. Reúne firmantes (o representantes)
+4. Presentación formal a:
+   - Consejo municipal
+   - Secretaría de hacienda
+   - Junta directiva del barrio
+   - Medios de comunicación
+
+PDF sirve como:
+- Evidencia de consenso
+- Documento oficial
+- Prueba de representatividad
+- Base para negociación
+
+---
+
+=== DIAGRAMA DE ESTADOS ===
+
+PETICIÓN:
+┌──────────────┐
+│   Borrador   │ Usuario está creando
+└──────┬───────┘
+       ↓
+┌──────────────┐
+│   Pendiente  │ Esperando revisión de admin
+│   Revisión   │
+└──────┬───────┘
+       ↓ (Aprobada)
+┌──────────────┐
+│    Activa    │ Aceptando apoyos
+└──────┬───────┘
+       ├─ Alcanza meta ──→ ┌──────────────┐
+       │                   │  Completada  │ Lista para presentación
+       │                   └──────────────┘
+       │
+       └─ Rechazada ──→ ┌──────────────┐
+                        │  Rechazada   │ No cumplió requisitos
+                        └──────────────┘
+
+APOYO:
+┌──────────────┐
+│   Registrado │ Ciudadano apoyó
+└──────┬───────┘
+       ├─ Confirmado ──→ ┌──────────────┐
+       │                 │  Verificado  │ Confirmó por email
+       │                 └──────────────┘
+       │
+       └─ Anónimo ──→ ┌──────────────┐
+                      │   Anónimo    │ Sin datos personales
+                      └──────────────┘
+
+---
+
+=== FLUJO DE DATOS ===
+
+ENTRADA DE DATOS:
+Usuario ingresa
+   ↓
+Validación cliente (formato)
+   ↓
+Envío HTTPS
+   ↓
+Validación servidor (seguridad)
+   ↓
+Sanitización (evitar inyección)
+   ↓
+Almacenamiento en BD
+   ↓
+Confirmación al usuario
+
+SALIDA DE DATOS:
+Solicitud GET /api/peticion/PET-001
+   ↓
+Búsqueda en BD
+   ↓
+Formateo JSON
+   ↓
+Envío HTTPS
+   ↓
+Renderizado en navegador
+
+GENERACIÓN DE PDF:
+Datos de BD (100 apoyos)
+   ↓
+Plantilla HTML
+   ↓
+Librería PDF (pdfkit, puppeteer)
+   ↓
+Generación de archivo PDF
+   ↓
+Almacenamiento o descarga directa
+
+---
+
+=== INTEGRACIONES ===
+
+INTEGRACIÓN CON n8n:
+┌─────────────────┐
+│  Evento: Nuevo  │
+│  Apoyo > 50     │
+└────────┬────────┘
+         │
+         ├─→ Verificar si hito alcanzado
+         │
+         ├─→ Si sí:
+         │   ├─→ Enviar email al organizador
+         │   ├─→ Notificación Telegram
+         │   ├─→ Disparar generación PDF
+         │   └─→ Registrar en auditoría
+         │
+         └─→ Si no:
+             └─→ Registrar y continuar
+
+INTEGRACIÓN CON TELEGRAM:
+Bot recibe evento del sistema
+         │
+         ├─→ Hito de 50%: "¡Mitad alcanzada!"
+         ├─→ Hito de 100%: "¡Meta completada!"
+         └─→ Nueva petición: "Nueva causa: [título]"
+
+INTEGRACIÓN CON EMAIL:
+Nuevo apoyo → Email de confirmación
+Meta alcanzada → Notificación a organizador
+PDF listo → Descarga disponible
+Invitación → Link para compartir
+
+---
+
+=== CASOS DE BORDE ===
+
+CASO 1: Apoyo duplicado
+Misma persona intenta apoyar 2 veces
+Sistema: Verifica por email/IP
+Resultado: Rechaza segundo intento
+
+CASO 2: Petición suspendida
+Admin marca como "incumple términos"
+Resultado: Petición se oculta, apoyos congelados
+
+CASO 3: PDF solicitado antes de alcanzar meta
+Usuarios preguntan "¿puedo descargar ahora?"
+Respuesta: "Descarga estará disponible cuando alcances 100 apoyos"
+
+CASO 4: Cambio de meta
+Organizador quiere bajar meta de 100 a 80
+Sistema: Verifica si ya superó 80
+Si sí: Permite cambio y marca como completada
+
+---
+
+=== MÉTRICAS DEL SISTEMA ===
+
+DASHBOARD PARA COORDINADOR:
+- Total de peticiones: 15
+- Activas: 8
+- Completadas: 3
+- Rechazadas: 2
+- Apoyos totales: 487
+- Más popular: "Mejorar parque" (100/100)
+- Mayor velocidad: "Alumbrado" (100 en 3 días)
+
+---
+
+Fecha: 2026-07-16
+Estado: Documentado

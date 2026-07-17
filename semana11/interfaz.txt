@@ -1,0 +1,400 @@
+INTERFAZ DE USUARIO - SEMANA 11
+Plataforma Ciudadana - Diseño y Componentes
+
+=== ESTRUCTURA GENERAL DE LA INTERFAZ ===
+
+LAYOUT PRINCIPAL:
+
+┌──────────────────────────────────────────────┐
+│  HEADER: Logo | Navegación | Perfil de usuario│
+├──────────────────────────────────────────────┤
+│ SIDEBAR          │                           │
+│ • Inicio         │    CONTENIDO PRINCIPAL    │
+│ • Eventos        │    (Dinámico según ruta) │
+│ • Incidencias    │                           │
+│ • Mi Perfil      │                           │
+│ • Salir          │                           │
+├──────────────────────────────────────────────┤
+│  FOOTER: Términos | Privacidad | Contacto   │
+└──────────────────────────────────────────────┘
+
+---
+
+=== PÁGINAS PRINCIPALES ===
+
+PÁGINA 1: LOGIN/REGISTRO
+
+[PANTALLA LOGIN]
+┌──────────────────┐
+│   Logo Platforma │
+│   INICIAR SESIÓN │
+│                  │
+│ Email: [_______] │
+│ Pass:  [_______] │
+│                  │
+│  [ENTRAR]        │
+│  [Crear cuenta]  │
+└──────────────────┘
+
+Formulario:
+- Email: input de texto (validación email)
+- Contraseña: input de password (no mostrar caracteres)
+- Botón "Entrar": Activo solo si campos válidos
+- Link "¿Olvidaste contraseña?": Recuperación
+- Link "Crear cuenta": Redirección a registro
+
+Validación en tiempo real:
+✓ Email válido (contiene @)
+✓ Contraseña > 8 caracteres
+
+Mensajes de error:
+❌ "Email inválido"
+❌ "Credenciales incorrectas"
+❌ "Cuenta no verificada"
+
+---
+
+[PANTALLA REGISTRO]
+┌──────────────────┐
+│  CREAR CUENTA    │
+│                  │
+│ Nombre: [______] │
+│ Email:  [______] │
+│ Pass:   [______] │
+│ Conf:   [______] │
+│                  │
+│ ☐ Acepto términos│
+│                  │
+│ [REGISTRAR]      │
+│ [Ya tengo cuenta]│
+└──────────────────┘
+
+Campos:
+- Nombre completo (no sensible, solo para saludo)
+- Email (único, validado)
+- Contraseña (>8 chars, 1 mayús, 1 número)
+- Confirmar contraseña (debe coincider)
+- Checkbox: Aceptar términos de privacidad
+
+Validación dinámica:
+- Color verde: Campo válido
+- Color rojo: Campo inválido
+- Mensaje de requisito debajo del campo
+
+---
+
+PÁGINA 2: INICIO/DASHBOARD
+
+[PARA CIUDADANO]
+┌────────────────────────────────┐
+│ Bienvenido, Juan               │
+│                                │
+│ Próximos eventos:              │
+│ ┌──────────────────────────┐   │
+│ │ 📅 Taller Python        │   │
+│ │    Jul 25 - 10:00       │   │
+│ │    [Más info]           │   │
+│ └──────────────────────────┘   │
+│ ┌──────────────────────────┐   │
+│ │ 🎤 Meetup Frontend      │   │
+│ │    Ago 1 - 15:00        │   │
+│ │    [Más info]           │   │
+│ └──────────────────────────┘   │
+│                                │
+│ Mis reportes recientes:        │
+│ • #INC-001: Bache en calle 5   │
+│   Estado: En proceso           │
+│                                │
+│ [VER TODO]                     │
+└────────────────────────────────┘
+
+Componentes:
+- Tarjetas de eventos con imagen
+- Estado de incidencias personales
+- Botones de acceso rápido
+- Contador de notificaciones
+
+---
+
+PÁGINA 3: LISTADO DE EVENTOS
+
+[INTERFAZ]
+┌──────────────────────────────────┐
+│ EVENTOS                          │
+├──────────────────────────────────┤
+│ Buscar: [___________] 🔍         │
+│ Filtro: [Próximos ▼] [Categoría▼]│
+├──────────────────────────────────┤
+│ ┌──────────────────────────────┐ │
+│ │ 📅 TALLER PYTHON AVANZADO   │ │
+│ │ Fecha: 25 de Julio          │ │
+│ │ Hora: 10:00 AM              │ │
+│ │ Lugar: Centro Comunitario   │ │
+│ │ Registrados: 12/30          │ │
+│ │ [VER DETALLES] [REGISTRARSE]│ │
+│ └──────────────────────────────┘ │
+│ ┌──────────────────────────────┐ │
+│ │ 🎤 MEETUP FRONTEND          │ │
+│ │ Fecha: 1 de Agosto          │ │
+│ │ Hora: 3:00 PM               │ │
+│ │ Lugar: Espacio Digital      │ │
+│ │ Registrados: 25/50          │ │
+│ │ [VER DETALLES] [REGISTRARSE]│ │
+│ └──────────────────────────────┘ │
+│                                  │
+│ Página 1 de 5  [<] [1][2][3][>]  │
+└──────────────────────────────────┘
+
+Funcionalidades:
+- Búsqueda por título (en vivo)
+- Filtro por categoría/fecha
+- Mostrar disponibilidad de cupo
+- Indicador visual de cupo casi lleno (rojo)
+- Paginación
+
+---
+
+PÁGINA 4: DETALLE DE EVENTO
+
+[INTERFAZ]
+┌─────────────────────────────────┐
+│ ← VOLVER A EVENTOS              │
+│                                 │
+│ TALLER PYTHON AVANZADO          │
+│ ┌──────────────────────────────┐│
+│ │ [Imagen evento]              ││
+│ └──────────────────────────────┘│
+│                                 │
+│ 📅 Fecha: 25 de Julio 2026      │
+│ 🕐 Hora: 10:00 AM - 12:00 PM    │
+│ 📍 Lugar: Centro Comunitario    │
+│ 👤 Organizador: María García    │
+│ 👥 Participantes: 12/30         │
+│                                 │
+│ DESCRIPCIÓN:                    │
+│ Taller introductorio a Python..│
+│                                 │
+│ [REGISTRARSE] o [CANCELAR REGISTRO]
+│                                 │
+│ COMENTARIOS:                    │
+│ Usuario1: Excelente evento      │
+│ Usuario2: Muy útil              │
+│                                 │
+│ [Mi comentario: ___________]    │
+│ [COMENTAR]                      │
+└─────────────────────────────────┘
+
+Componentes:
+- Banner con imagen del evento
+- Información completa
+- Botón dinámico (registrar/cancelar según estado)
+- Sección de comentarios
+- Mapa de ubicación (opcional)
+
+---
+
+PÁGINA 5: REPORTAR INCIDENCIA
+
+[INTERFAZ]
+┌──────────────────────────┐
+│ REPORTAR INCIDENCIA      │
+├──────────────────────────┤
+│                          │
+│ Tipo de incidencia:      │
+│ [Seleccionar ▼]          │
+│ • Infraestructura        │
+│ • Seguridad              │
+│ • Servicios              │
+│ • Ambiente               │
+│ • Otro                   │
+│                          │
+│ Título:                  │
+│ [________________]       │
+│                          │
+│ Descripción:             │
+│ [________________]       │
+│ [________________]       │
+│ [________________]       │
+│                          │
+│ Ubicación:               │
+│ [________________]       │
+│ [Usar ubicación actual]  │
+│                          │
+│ Adjuntar foto (opcional):│
+│ [Seleccionar archivo]    │
+│ 📷 Cámara  📁 Galería    │
+│                          │
+│ ☐ Deseo permanecer anónimo
+│                          │
+│ [ENVIAR REPORTE]         │
+└──────────────────────────┘
+
+Funcionalidades:
+- Selector de tipo predefinido
+- Geolocalización opcional
+- Carga de imagen/foto
+- Opción de anonimato
+- Validación antes de enviar
+
+---
+
+PÁGINA 6: MIS INCIDENCIAS (SEGUIMIENTO)
+
+[INTERFAZ]
+┌─────────────────────────────────┐
+│ MIS REPORTES                    │
+├─────────────────────────────────┤
+│ Total: 5 reportes               │
+│                                 │
+│ ┌───────────────────────────┐   │
+│ │ #INC-001                  │   │
+│ │ Bache en calle 5          │   │
+│ │ 🟢 RESUELTO               │   │
+│ │ Registrado: 10 de Julio   │   │
+│ │ [VER DETALLES]            │   │
+│ └───────────────────────────┘   │
+│                                 │
+│ ┌───────────────────────────┐   │
+│ │ #INC-002                  │   │
+│ │ Falta alumbrado calle 12  │   │
+│ │ 🟡 EN PROCESO             │   │
+│ │ Registrado: 12 de Julio   │   │
+│ │ [VER DETALLES]            │   │
+│ └───────────────────────────┘   │
+│                                 │
+│ ┌───────────────────────────┐   │
+│ │ #INC-003                  │   │
+│ │ Basura acumulada          │   │
+│ │ ⚪ PENDIENTE              │   │
+│ │ Registrado: 15 de Julio   │   │
+│ │ [VER DETALLES]            │   │
+│ └───────────────────────────┘   │
+│                                 │
+│ Filtro: [Todos ▼] [Resuelto] [En proceso]
+└─────────────────────────────────┘
+
+Estados con colores:
+- 🟢 Verde: Resuelto
+- 🟡 Amarillo: En proceso
+- ⚪ Gris: Pendiente
+- 🔴 Rojo: No procedente
+
+---
+
+=== COMPONENTES REUTILIZABLES ===
+
+BOTONES:
+- Primario: Fondo azul, texto blanco (acciones principales)
+- Secundario: Borde azul, texto azul (acciones alternativas)
+- Peligro: Fondo rojo (eliminar, desapuntarse)
+- Deshabilitado: Gris claro, cursor deshabilitado
+
+<button class="btn-primary">Enviar</button>
+<button class="btn-secondary">Cancelar</button>
+
+---
+
+TARJETAS:
+- Sombra suave
+- Borde redondeado (8px)
+- Padding interno (16px)
+- Hover: Sombra aumenta, cursor pointer
+
+<div class="card">
+  <h3>Título</h3>
+  <p>Contenido</p>
+</div>
+
+---
+
+ALERTAS:
+- Éxito: Fondo verde, icono ✓
+- Error: Fondo rojo, icono ✗
+- Info: Fondo azul, icono ℹ
+- Advertencia: Fondo amarillo, icono ⚠
+
+<div class="alert alert-success">
+  Incidencia registrada correctamente
+</div>
+
+---
+
+FORMULARIOS:
+- Label encima del input
+- Error debajo en rojo
+- Placeholder descriptivo
+- Color rojo si inválido, verde si válido
+
+<div class="form-group">
+  <label>Email:</label>
+  <input type="email" placeholder="tu@email.com">
+  <span class="error">Email inválido</span>
+</div>
+
+---
+
+=== RESPONSIVE DESIGN ===
+
+MOBILE (< 768px):
+- Stack vertical de componentes
+- Pantalla completa sin sidebar
+- Menú hamburguesa en header
+- Botones más grandes (touch-friendly)
+
+TABLET (768px - 1024px):
+- Dos columnas si aplica
+- Sidebar colapsable
+
+DESKTOP (> 1024px):
+- Tres columnas si aplica
+- Sidebar siempre visible
+- Diálogos modales
+
+---
+
+=== ACCESIBILIDAD ===
+
+WCAG 2.1 Level AA:
+
+Colores:
+- Contraste mínimo 4.5:1 (texto)
+- No confiar solo en color (usar iconos + texto)
+
+Keyboard navigation:
+- Todos los botones accesibles con Tab
+- Focus visible en elementos interactivos
+- Orden lógico de tabulación
+
+Screen readers:
+- Alt text en imágenes
+- Labels en campos
+- ARIA labels donde sea necesario
+
+---
+
+=== PALETA DE COLORES ===
+
+Primario: #0066CC (Azul)
+Secundario: #FF6B6B (Rojo)
+Éxito: #51CF66 (Verde)
+Advertencia: #FFD700 (Amarillo)
+Fondo: #F8F9FA (Gris muy claro)
+Texto: #212529 (Gris oscuro)
+Borde: #DEE2E6 (Gris claro)
+
+---
+
+=== TIPOGRAFÍA ===
+
+Fuente: Inter, Roboto (fallback)
+Tamaños:
+- H1: 32px (títulos principales)
+- H2: 24px (secciones)
+- H3: 18px (subtítulos)
+- Body: 16px (texto normal)
+- Small: 14px (labels, helper text)
+
+---
+
+Fecha: 2026-07-16
+Estado: Documentado

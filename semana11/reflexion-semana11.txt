@@ -1,0 +1,205 @@
+REFLEXIÓN - SEMANA 11
+Base de Datos, Autenticación e Interfaz de Usuario
+
+=== CONCEPTOS CLAVE APRENDIDOS ===
+
+1. BASE DE DATOS: CORAZÓN DE LA APLICACIÓN
+Una base de datos bien diseñada es fundamental porque:
+- Define cómo se almacenan los datos
+- Influye en performance y escalabilidad
+- Asegura integridad de información
+- Permite recuperación rápida de datos
+
+Aprendizaje clave: No puedo "arreglar" una BD mal diseñada en código.
+Es mejor invertir tiempo en diseño correcto desde el inicio.
+
+---
+
+2. CRUD: OPERACIONES FUNDAMENTALES
+Create, Read, Update, Delete son la base de casi toda aplicación:
+- CREATE: Registrar nuevo usuario, reportar incidencia
+- READ: Ver listado de eventos, consultar status
+- UPDATE: Cambiar estado de reporte, modificar perfil
+- DELETE: Cancelar registro, eliminar evento
+
+Aprendizaje clave: Toda funcionalidad nueva es una combinación de CRUD.
+Si entiendo CRUD, puedo entender cualquier sistema.
+
+---
+
+3. AUTENTICACIÓN: CONTROL DE ACCESO
+Autenticación es más que "login":
+- Verifica identidad: ¿Eres quien dices ser?
+- Controla acceso: ¿Qué puedes hacer?
+- Registra acciones: ¿Quién hizo qué?
+
+Aprendizaje clave: Seguridad deficiente es responsabilidad.
+Una plataforma ciudadana maneja datos sensibles de la comunidad.
+
+---
+
+4. ENCRIPTACIÓN Y HASHING
+Diferencia crítica:
+- Encriptación: Reversible (AES, para datos que necesitan desencriptarse)
+- Hashing: Irreversible (bcrypt, para contraseñas)
+
+Nunca almacenar contraseñas en texto plano. NUNCA.
+
+---
+
+5. INTERFAZ: EXPERIENCIA DEL USUARIO
+La mejor funcionalidad es inútil si nadie sabe cómo usarla:
+- Diseño claro: Fácil de entender
+- Accesibilidad: Funciona para todos
+- Responsive: Funciona en cualquier dispositivo
+- Validación: Previene errores del usuario
+
+Aprendizaje clave: El usuario es el cliente. Si no entiende, fracasamos.
+
+---
+
+=== REFLEXIÓN PERSONAL ===
+
+IMPORTANCIA DE LA INTEGRIDAD:
+
+Trabajar con datos ciudadanos es responsabilidad. Cada fallo de seguridad:
+- Viola privacidad de la comunidad
+- Daña confianza en la plataforma
+- Puede tener consecuencias legales (GDPR, CCPA)
+- Afecta reputación del proyecto
+
+No es "solo un sistema de práctica". Aplicar buenas prácticas
+es un hábito que debo llevar a producción.
+
+---
+
+BALANCEANDO SEGURIDAD Y USABILIDAD:
+
+Dilema: Más seguridad (contraseña compleja) = Menos usable
+Solución: Equilibrio informado
+- Contraseña > 8 caracteres: Seguro pero no extremo
+- Token de 7 días: Seguro pero no incómodo
+- Verificación de email: Necesaria para confiabilidad
+
+"La seguridad perfecta = aplicación unusable"
+"Seguridad nula = aplicación inútil"
+El arte está en el balance.
+
+---
+
+DISEÑO DE BASE DE DATOS:
+
+Aprendí que una BD mal diseñada te acompaña para siempre:
+- Queries lentos: Imposible de optimizar si está mal diseñada
+- Cambios: Refactorizar BD en producción es pesadilla
+- Datos inconsistentes: Se va acumulando problema
+
+Por eso: Diseño > Código
+
+En cambio, refactorizar código es fácil.
+Refactorizar BD es traumático.
+
+---
+
+INTERFAZ COMO COMUNICACIÓN:
+
+Diseñar interfaz no es estética, es comunicación:
+- Color rojo = peligro/error
+- Botón grande = acción importante
+- Campo deshabilitado = no puedo interactuar aquí
+
+El usuario no lee documentación. La interfaz es su guía.
+
+---
+
+=== LECCIONES APLICABLES ===
+
+1. Siempre pensar en el usuario que va a interactuar
+2. Proteger datos de otros es responsabilidad personal
+3. Validar en servidor, nunca confiar solo en cliente
+4. Logs son historia de la aplicación
+5. Auditoría = verdad bajo presión
+
+---
+
+=== DESAFÍOS ENCONTRADOS ===
+
+DESAFÍO 1: Complejidad de autenticación
+Problema: JWT, refresh tokens, blacklist = muchas partes móviles
+Solución: Usar librerías probadas (Passport, Auth0)
+Lección: No reinventar rueda de seguridad
+
+---
+
+DESAFÍO 2: Balance seguridad vs usabilidad
+Problema: Políticas de contraseña estricta pero usuarios no lo recordaban
+Solución: Permitir recuperación por email, 2FA opcional
+Lección: Seguridad debe ser invisible para usuario normal
+
+---
+
+DESAFÍO 3: Diseño responsive complejo
+Problema: Interfaz se veía bien en desktop pero terrible en mobile
+Solución: Mobile-first approach, testear en dispositivos reales
+Lección: No asumir que "se vea bien aquí". Testear!
+
+---
+
+=== PRÓXIMOS PASOS RECOMENDADOS ===
+
+1. Implementar proyecto completo con BD + Auth + UI
+2. Considerar implicaciones de privacidad desde inicio
+3. Hacer code review con perspectiva de seguridad
+4. Testear accesibilidad (accessibility testing)
+5. Documentar decisiones de diseño
+
+---
+
+=== CONEXIÓN CON COMUNIDAD ===
+
+Semanas anteriores aprendí:
+- Backlog: Qué construir
+- Iteración: Cómo organizarse
+- Automatización: Procesos eficientes
+- Comunicación: Mantener coordinados
+
+Semana 11 agregó la base técnica:
+- Base de datos: Dónde almacenar datos
+- Autenticación: Quién puede acceder
+- Interfaz: Cómo interactúan usuarios
+
+Estas son las capas que hacen que una plataforma ciudadana
+sea efectiva, segura y confiable.
+
+---
+
+=== PRINCIPIOS APRENDIDOS ===
+
+1. RESPONSABILIDAD: Datos ajenos merecen protección máxima
+2. INTEGRIDAD: Código honesto, sin atajos de seguridad
+3. CLARIDAD: Interfaz clara, intenciones claras
+4. AUDITORÍA: Lo que se registra, se puede investigar
+5. ESCALABILIDAD: Diseñar para crecer sin quebrar
+
+---
+
+=== CONCLUSIÓN ===
+
+Base de datos, autenticación e interfaz son los pilares
+de cualquier aplicación moderna. Dominarlos no es solo
+técnico, es responsabilidad con los usuarios.
+
+Una plataforma ciudadana que maneja incidencias y eventos
+de la comunidad debe tener estos pilares sólidos.
+
+Si fallo en seguridad: Violo confianza de la comunidad.
+Si fallo en usabilidad: Nadie la usa.
+Si fallo en integridad de datos: Tengo información corrupta.
+
+Ninguno de estos fallos es aceptable.
+
+---
+
+Fecha: 2026-07-16
+Estado: Completado
+Reflexión: Profunda y honesta sobre responsabilidad

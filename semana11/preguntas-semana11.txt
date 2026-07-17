@@ -1,0 +1,169 @@
+PREGUNTAS DE SELECCIÓN MÚLTIPLE - SEMANA 11
+Base de Datos, Autenticación e Interfaz
+
+=== Pregunta 1 ===
+¿Qué es una base de datos en una aplicación?
+
+a) Un programa para editar texto.
+b) Un sistema que permite almacenar y consultar información estructurada.
+c) Un servidor web.
+d) Un navegador.
+
+RESPUESTA: b) Un sistema que permite almacenar y consultar información estructurada.
+
+JUSTIFICACIÓN:
+Una base de datos es un repositorio organizado de datos que permite:
+- Almacenar información de forma estructurada (tablas, documentos, etc.)
+- Recuperar datos mediante consultas (queries)
+- Actualizar y eliminar información
+- Mantener integridad referencial
+- Garantizar consistencia de datos
+- Escalar a millones de registros
+
+Ejemplos de bases de datos:
+- Relacionales: PostgreSQL, MySQL, SQL Server
+- NoSQL: MongoDB, Firebase, DynamoDB
+- Gráficas: Neo4j
+- En caché: Redis
+
+La base de datos es el "corazón" de cualquier aplicación que maneje datos.
+
+---
+
+=== Pregunta 2 ===
+¿Qué significa CRUD en programación?
+
+a) Crear, leer, actualizar y eliminar datos.
+b) Copiar archivos del sistema.
+c) Ejecutar comandos de terminal.
+d) Crear servidores.
+
+RESPUESTA: a) Crear, leer, actualizar y eliminar datos.
+
+JUSTIFICACIÓN:
+CRUD es el acrónimo para las cuatro operaciones básicas de base de datos:
+
+C - CREATE (Crear):
+  INSERT INTO usuarios (email, nombre) VALUES ('user@example.com', 'Juan')
+  POST /api/usuarios
+
+R - READ (Leer/Consultar):
+  SELECT * FROM usuarios WHERE id = 1
+  GET /api/usuarios/1
+
+U - UPDATE (Actualizar):
+  UPDATE usuarios SET nombre = 'Carlos' WHERE id = 1
+  PUT /api/usuarios/1
+
+D - DELETE (Eliminar):
+  DELETE FROM usuarios WHERE id = 1
+  DELETE /api/usuarios/1
+
+Toda aplicación que interactúa con datos implementa operaciones CRUD:
+- Blog: crear posts, leer artículos, actualizar contenido, eliminar
+- Red social: crear publicaciones, ver comentarios, editar perfil, borrar cuenta
+- Sistema de ventas: crear órdenes, consultar historial, cambiar estado, cancelar
+- Plataforma comunitaria: registrar incidencias, consultar reportes, actualizar estado, retirar
+
+---
+
+=== Pregunta 3 ===
+¿Qué permite la autenticación de usuarios en una aplicación?
+
+a) Que cualquier persona acceda sin control.
+b) Identificar usuarios y controlar quién puede acceder a ciertas funciones.
+c) Crear archivos del sistema.
+d) Instalar software.
+
+RESPUESTA: b) Identificar usuarios y controlar quién puede acceder a ciertas funciones.
+
+JUSTIFICACIÓN:
+La autenticación permite:
+
+1. IDENTIFICACIÓN (¿Quién eres?):
+   - Verificar identidad mediante credenciales (usuario/contraseña)
+   - Confirmar que eres quien dices ser
+   - Crear sesión/token para mantener identidad
+
+2. AUTORIZACIÓN (¿Qué puedes hacer?):
+   - Controlar qué funciones accede cada usuario
+   - Asignar roles (admin, usuario, coordinador)
+   - Definir permisos por rol
+
+3. AUDITORÍA:
+   - Registrar quién hizo qué y cuándo
+   - Trazabilidad de cambios
+
+Ejemplos de flujo de autenticación:
+
+STEP 1: Usuario ingresa email y contraseña
+STEP 2: Sistema verifica credenciales
+STEP 3: Si es correcto, genera token JWT
+STEP 4: Token se almacena en cliente (localStorage)
+STEP 5: Cada petición incluye el token
+STEP 6: Sistema verifica token y autoriza acción
+
+Sin autenticación: Sistema vulnerable, datos expuestos, sin seguridad.
+
+---
+
+=== Pregunta 4 ===
+¿Por qué es importante proteger datos sensibles en una plataforma digital?
+
+a) Para que cualquier persona pueda verlos.
+b) Para evitar riesgos de privacidad o uso indebido de la información.
+c) Para mejorar el diseño visual.
+d) Para instalar aplicaciones.
+
+RESPUESTA: b) Para evitar riesgos de privacidad o uso indebido de la información.
+
+JUSTIFICACIÓN:
+Proteger datos sensibles es crítico porque:
+
+🔓 RIESGOS DE NO PROTEGER:
+- Robo de identidad: Usar datos para fraude
+- Violación de privacidad: Exposición de información personal
+- Suplantación: Acceso a cuentas de otros
+- Pérdida de confianza: Usuarios dejan de usar la plataforma
+- Consecuencias legales: Violación de GDPR, CCPA, leyes locales
+- Daño reputacional: Escándalo público
+
+DATOS SENSIBLES A PROTEGER:
+- Contraseñas (encriptadas, nunca en texto plano)
+- Documentos de identidad
+- Información bancaria
+- Teléfono, dirección
+- Emails personales
+- Datos biométricos
+- Información médica
+- Historial de transacciones
+
+MECANISMOS DE PROTECCIÓN:
+1. Encriptación en tránsito (HTTPS/TLS)
+2. Encriptación en reposo (base de datos)
+3. Hashing de contraseñas (bcrypt, Argon2)
+4. Control de acceso (autenticación + autorización)
+5. Auditoría y logging
+6. Cumplimiento normativo (GDPR, CCPA, etc.)
+
+CASO EN PLATAFORMA CIUDADANA:
+- Proteger identidad de reportantes de incidencias
+- No exponer direcciones en reportes públicos
+- Encriptar comunicaciones de coordinadores
+- Respetar privacidad de participantes en eventos
+
+"Con grandes datos viene gran responsabilidad" - Tío Ben
+
+---
+
+RESUMEN DE RESPUESTAS:
+1. b) Sistema que permite almacenar y consultar información
+2. a) Crear, leer, actualizar y eliminar datos
+3. b) Identificar usuarios y controlar acceso
+4. b) Evitar riesgos de privacidad e uso indebido
+
+PUNTUACIÓN: 4/4 correctas ✅
+
+---
+Fecha: 2026-07-16
+Estado: Completado

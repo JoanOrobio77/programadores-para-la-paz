@@ -1,0 +1,335 @@
+AUTOMATIZACIÓN CON n8n Y TELEGRAM - SEMANA 10
+Sistema de Gestión de Eventos y Veeduría Comunitaria
+
+=== FLUJO 1: ALERTA DE NUEVO REPORTE DE INCIDENCIA ===
+
+DESCRIPCIÓN:
+Cuando un ciudadano registra una nueva incidencia (reporte de problema en la comunidad),
+el equipo de coordinadores recibe una notificación automática en Telegram para revisar
+y atender el caso.
+
+────────────────────────────────────────
+
+EVENTO QUE ACTIVA EL FLUJO:
+✓ Disparador: POST /api/incidents (nuevo reporte registrado)
+✓ Condición: Estado inicial = "pendiente"
+✓ Verificación: Todos los campos requeridos presentes
+
+FLUJO EN n8n:
+1. Trigger: Webhook (escucha POST en /api/incidents)
+2. Filtro: Validar que tipo_incidencia sea válida
+3. Transformación: Extraer datos para mensaje
+4. Envío: Telegram Bot API
+5. Logging: Registrar envío en base de datos
+6. Error handling: Reintentos automáticos
+
+────────────────────────────────────────
+
+MENSAJE QUE SE ENVIARÍA A TELEGRAM:
+
+📢 NUEVO REPORTE DE INCIDENCIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ID Reporte: #INC-2026-07-16-001
+Tipo: Infraestructura
+Ubicación: Calle Principal, Barrio Centro
+Descripción: Bache en la vía pública
+
+Estado: Pendiente
+Fecha de registro: 2026-07-16 14:30
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 [Revisar en Sistema]
+button: https://platform.local/incidents/INC-2026-07-16-001
+
+FORMATO SEGURO:
+- Solo información pública
+- ID de reporte para seguimiento
+- Categoría general del problema
+- Ubicación general (sin detalles específicos)
+- Descripción breve sin datos sensibles
+
+────────────────────────────────────────
+
+INFORMACIÓN QUE NO DEBE ENVIARSE (SEGURIDAD):
+
+❌ DATOS PERSONALES DEL REPORTANTE:
+   - Nombre completo
+   - Correo electrónico
+   - Teléfono
+   - Dirección particular
+   - Documento de identidad (cédula, pasaporte)
+   - IP del usuario
+   - Datos biométricos
+
+❌ INFORMACIÓN SENSIBLE:
+   - Contraseñas o tokens
+   - Datos de cuenta bancaria
+   - Información médica
+   - Historial criminal
+   - Foto/video del reportante
+   - Ubicación GPS exacta
+   - Información sobre familiares
+
+❌ DETALLES OPERACIONALES:
+   - Rutas internas de API
+   - Estructura de base de datos
+   - Credenciales de administrador
+   - Claves de encriptación
+   - Configuración del servidor
+
+❌ INFORMACIÓN POTENCIALMENTE CONFLICTIVA:
+   - Nombres completos de personas mencionadas en el reporte
+   - Direcciones específicas de viviendas
+   - Información que comprometa seguridad pública
+
+PRINCIPIO: "Solo lo que el coordinador necesita saber"
+
+────────────────────────────────────────
+
+VARIABLES EN EL FLUJO (n8n):
+
+Entrada desde webhook:
+{
+  "incident_id": "INC-2026-07-16-001",
+  "type": "infrastructure",
+  "location": "Calle Principal, Barrio Centro",
+  "description": "Bache en la vía pública",
+  "created_at": "2026-07-16T14:30:00Z",
+  "status": "pending",
+  "reporter_id": "USER-12345"  ← NO ENVIAR
+}
+
+Output para Telegram (seguro):
+{
+  "text": "📢 NUEVO REPORTE...",
+  "chat_id": "-1001234567890",  ← ID del grupo (sin exponer)
+  "parse_mode": "HTML"
+}
+
+────────────────────────────────────────
+
+=== FLUJO 2: ACTUALIZACIÓN DE ESTADO CON NOTIFICACIÓN ===
+
+DESCRIPCIÓN:
+Cuando un coordinador actualiza el estado de un reporte (de "pendiente" a "en proceso"
+o "resuelto"), se notifica al canal de coordinadores para transparencia.
+
+EVENTO QUE ACTIVA EL FLUJO:
+✓ Disparador: PATCH /api/incidents/:id/status
+✓ Cambio: estado anterior ≠ estado nuevo
+✓ Validación: Solo cambios válidos
+
+MENSAJE PARA TELEGRAM:
+
+🔄 ACTUALIZACIÓN DE ESTADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ID Reporte: #INC-2026-07-16-001
+Estado anterior: Pendiente
+Estado nuevo: En Proceso
+Actualizado por: Coordinador (solo iniciales o ID)
+Hora: 2026-07-16 15:45
+
+Comentario: "Equipo de infraestructura asignado"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NO INCLUIR: Nombre del coordinador, detalles de contacto
+
+────────────────────────────────────────
+
+=== FLUJO 3: NOTIFICACIÓN DE EVENTO PRÓXIMO ===
+
+DESCRIPCIÓN:
+Cuando falta 1 día para un evento, se notifica al coordinador para recordatorio
+de preparativos (no sensible para ciudadanos).
+
+EVENTO QUE ACTIVA EL FLUJO:
+✓ Disparador: Cron job diario a las 09:00 AM
+✓ Acción: Buscar eventos con fecha = mañana
+✓ Filtro: Solo eventos con estado = confirmado
+
+MENSAJE PARA TELEGRAM:
+
+📅 RECORDATORIO DE EVENTO MAÑANA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Evento: Taller de Python Avanzado
+Fecha: 2026-07-17 10:00 - 12:00
+Ubicación: Centro Comunitario
+Registrados: 25 participantes
+
+Checklist:
+☐ Confirmar espacio
+☐ Verificar materiales
+☐ Contactar facilitador
+☐ Preparar lista de asistencia
+
+🔗 [Ver detalles]
+
+NO INCLUIR: Nombres de participantes, emails, teléfonos
+
+────────────────────────────────────────
+
+=== FLUJO 4: ALERTA DE CARGA ANORMAL ===
+
+DESCRIPCIÓN:
+Sistema detecta actividad anormal (múltiples reportes en corto tiempo, intentos
+fallidos de login repetidos, etc.) y notifica al administrador.
+
+EVENTO QUE ACTIVA EL FLUJO:
+✓ Disparador: Monitoreo en tiempo real
+✓ Condición: >10 reportes en 1 hora desde mismo IP
+✓ Acción: Alerta inmediata
+
+MENSAJE PARA TELEGRAM:
+
+⚠️ ALERTA DE SEGURIDAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Tipo de alerta: Múltiples reportes en corto tiempo
+Cantidad: 12 reportes
+Período: Últimos 60 minutos
+Severidad: MEDIA
+
+Acción recomendada:
+- Revisar reportes para validar legitimidad
+- Posible testing o automatización
+- Verificar si es ataque
+
+NO INCLUIR: IP exacta del origen (solo rango general si aplica)
+
+────────────────────────────────────────
+
+=== CONFIGURACIÓN SEGURA EN n8n ===
+
+MEJORES PRÁCTICAS:
+
+1️⃣ ALMACENAMIENTO DE CREDENCIALES:
+   ✓ Token de Telegram en variables de entorno
+   ✓ Chat ID del grupo en .env (NO en código)
+   ✓ Usar "Credentials" de n8n para gestionar secretos
+   ✓ Nunca exponer credenciales en logs
+
+2️⃣ VALIDACIÓN DE DATOS:
+   ✓ Sanitizar entrada para evitar inyección
+   ✓ Validar tipo y formato de cada campo
+   ✓ Rechazar datos malformados
+   ✓ Límite de tamaño en mensajes
+
+3️⃣ AUDITORÍA Y LOGGING:
+   ✓ Registrar cada ejecución del flujo
+   ✓ Log de errores sin exponer datos sensibles
+   ✓ Timestamps de todas las acciones
+   ✓ Quién triggeró cada flujo
+
+4️⃣ MANEJO DE ERRORES:
+   ✓ Reintentos automáticos (máx 3 intentos)
+   ✓ Notificación a admin si falla
+   ✓ Fallback a alert manual
+   ✓ Logs detallados para debugging
+
+5️⃣ LÍMITES Y THROTTLING:
+   ✓ Máximo 100 mensajes/hora por canal
+   ✓ Delay de 1 segundo entre mensajes
+   ✓ No enviar duplicados en 5 minutos
+   ✓ Respetar horario de oficina (07:00-21:00)
+
+6️⃣ SEPARACIÓN DE INFORMACIÓN:
+   ✓ Canales diferentes para diferentes alertas
+   ✓ Permisos según rol en Telegram
+   ✓ Admin: alertas de seguridad
+   ✓ Coordinadores: actualizaciones de estado
+   ✓ Público: solo anuncios generales
+
+────────────────────────────────────────
+
+=== CHECKLIST DE SEGURIDAD ===
+
+Antes de activar cualquier flujo n8n:
+
+SEGURIDAD:
+☑ No hay credenciales en el flujo
+☑ Todos los datos sensibles en variables de entorno
+☑ Validación de entrada implementada
+☑ Sanitización de strings
+☑ Límite de rate en mensajes
+
+PRIVACIDAD:
+☑ No se envía información personal
+☑ No se exponen números de ID personales
+☑ No se incluyen emails/teléfonos
+☑ No se revelan operaciones internas
+
+FUNCIONALIDAD:
+☑ Flujo testado con datos ficticios
+☑ Reintentos configurados
+☑ Manejo de errores definido
+☑ Logging activado
+☑ Alertas ante fallos
+
+COMPLIANCE:
+☑ Cumple GDPR (protección de datos)
+☑ Cumple CCPA (privacidad de usuarios)
+☑ Respeta leyes locales de protección de datos
+☑ Usuarios pueden optar por no recibir notificaciones
+
+────────────────────────────────────────
+
+=== EJEMPLO DE CONFIGURACIÓN JSON ===
+
+Flow en n8n (estructura simplificada):
+
+{
+  "name": "Alert_New_Incident",
+  "nodes": [
+    {
+      "type": "webhook",
+      "name": "Trigger",
+      "url": "/webhook/incident",
+      "method": "POST"
+    },
+    {
+      "type": "filter",
+      "name": "ValidateData",
+      "condition": "incident_id && type && location"
+    },
+    {
+      "type": "function",
+      "name": "SanitizeMessage",
+      "code": "// Remover datos sensibles, escapar HTML, limitar longitud"
+    },
+    {
+      "type": "telegram",
+      "name": "SendAlert",
+      "credentials": "{{ env.TELEGRAM_TOKEN }}",
+      "chatId": "{{ env.TELEGRAM_CHAT_ID }}",
+      "message": "{{ $node.SanitizeMessage.data }}"
+    },
+    {
+      "type": "database",
+      "name": "LogExecution",
+      "query": "INSERT INTO automation_logs ..."
+    }
+  ]
+}
+
+────────────────────────────────────────
+
+=== RESUMEN ===
+
+✅ HACER:
+- Enviar alertas importantes y oportunas
+- Usar IDs de reporte para identificar
+- Incluir solo información pública
+- Respetar horarios de notificación
+- Registrar todo en logs
+
+❌ NO HACER:
+- Exponer datos personales
+- Incluir credenciales en mensajes
+- Spamear sin motivo
+- Revelar estructura del sistema
+- Enviar a horas intempestivas
+
+OBJETIVO: Automatizar procesos que AGREGUEN VALOR sin comprometer SEGURIDAD ni PRIVACIDAD.
+
+---
+Fecha: 2026-07-16
+Estado: Documentado
+Próximo paso: Implementar en n8n sandbox

@@ -1,0 +1,426 @@
+PLANIFICACIÓN DE ITERACIÓN (SPRINT) - SEMANA 10
+Sistema de Gestión de Eventos Comunitarios
+
+=== SPRINT 1: MVP AUTENTICACIÓN Y EVENTOS ===
+
+DURACIÓN: 2 semanas (10 días hábiles)
+OBJETIVO: Tener un MVP funcional con autenticación y gestión básica de eventos
+VELOCIDAD OBJETIVO: 20 puntos de historia
+
+FECHA INICIO: 2026-07-22
+FECHA FIN: 2026-08-02
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HISTORIAS INCLUIDAS EN SPRINT 1:
+
+📌 TASK 1.1: Crear modelo de usuarios
+Asignado a: Backend Developer
+Puntos: 5
+Dependencias: Ninguna
+Inicio: Día 1
+Fin estimado: Día 2
+
+Checklist:
+  □ Crear schema en base de datos
+  □ Campos validados
+  □ Pruebas de integridad
+  □ Documentar en README
+
+---
+
+📌 TASK 1.2: Implementar autenticación JWT
+Asignado a: Backend Developer
+Puntos: 8
+Dependencias: TASK 1.1
+Inicio: Día 2
+Fin estimado: Día 4
+
+Checklist:
+  □ Endpoint POST /register
+  □ Endpoint POST /login
+  □ Endpoint POST /logout
+  □ Validación de entrada
+  □ Pruebas unitarias (50% cobertura mínimo)
+
+---
+
+📌 TASK 1.3: Middleware de autenticación
+Asignado a: Backend Developer
+Puntos: 3
+Dependencias: TASK 1.2
+Inicio: Día 4
+Fin estimado: Día 5
+
+Checklist:
+  □ Middleware Express
+  □ Validación de token
+  □ Rechazo de no autenticados
+  □ Tests del middleware
+
+---
+
+📌 TASK 2.1: Crear modelo de eventos
+Asignado a: Backend Developer
+Puntos: 5
+Dependencias: Ninguna
+Inicio: Día 1
+Fin estimado: Día 2
+
+Checklist:
+  □ Schema eventos
+  □ Relación con usuarios
+  □ Validaciones
+  □ Índices en campos de búsqueda
+
+---
+
+📌 TASK 2.2: API crear evento
+Asignado a: Backend Developer
+Puntos: 5
+Dependencias: TASK 2.1, TASK 1.3
+Inicio: Día 3
+Fin estimado: Día 5
+
+Checklist:
+  □ POST /api/events
+  □ Validación de datos
+  □ Requiere autenticación
+  □ Retorna evento completo
+  □ Tests unitarios
+
+---
+
+📌 TASK 2.3: API listar eventos
+Asignado a: Backend Developer
+Puntos: 5
+Dependencias: TASK 2.1
+Inicio: Día 2
+Fin estimado: Día 4
+
+Checklist:
+  □ GET /api/events
+  □ Paginación funcional
+  □ Ordenamiento por fecha
+  □ Incluye info de organizador
+  □ Tests de paginación
+
+---
+
+📌 TASK 3.1: Relación eventos-participantes
+Asignado a: Backend Developer
+Puntos: 3
+Dependencias: TASK 2.1, TASK 1.1
+Inicio: Día 5
+Fin estimado: Día 6
+
+Checklist:
+  □ Tabla intermedia
+  □ Unique constraint
+  □ Timestamps
+  □ Triggers si aplica
+
+---
+
+📌 TASK 3.2: API registrar en evento
+Asignado a: Backend Developer
+Puntos: 5
+Dependencias: TASK 3.1, TASK 1.3
+Inicio: Día 6
+Fin estimado: Día 8
+
+Checklist:
+  □ POST /api/events/:id/register
+  □ Validación de cupo
+  □ Evita duplicados
+  □ Notificación básica
+  □ Tests completos
+
+---
+
+📌 TASK 6.1: Página de login/registro
+Asignado a: Frontend Developer
+Puntos: 5
+Dependencias: TASK 1.2 (Backend)
+Inicio: Día 3
+Fin estimado: Día 6
+
+Checklist:
+  □ Componentes React
+  □ Validación formulario
+  □ Manejo de errores
+  □ Almacenamiento de token
+  □ Responsive design
+  □ Tests con React Testing Library
+
+---
+
+📌 TASK 6.2: Página listado eventos
+Asignado a: Frontend Developer
+Puntos: 8
+Dependencias: TASK 2.3 (Backend)
+Inicio: Día 4
+Fin estimado: Día 8
+
+Checklist:
+  □ Componente lista eventos
+  □ Cards atractivas
+  □ Paginación funcional
+  □ Búsqueda en tiempo real
+  □ Filtro por fecha
+  □ Responsive
+  □ Tests
+
+---
+
+📌 TASK 6.3: Página detalle evento
+Asignado a: Frontend Developer
+Puntos: 8
+Dependencias: TASK 2.4 (Backend - no en Sprint 1)
+Inicio: Día 7
+Fin estimado: Día 10
+
+Checklist:
+  □ Vista completa evento
+  □ Botón registrarse/cancelar
+  □ Mostrar participantes (count)
+  □ Datos organizador
+  □ Responsivo
+  □ Tests
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RECURSOS DEL SPRINT:
+
+👥 EQUIPO:
+- 2 Backend Developers (tiempo completo)
+- 2 Frontend Developers (tiempo completo)
+- 1 QA Engineer (40% del tiempo)
+- 1 Scrum Master (10% coordinación)
+
+🏗️ INFRAESTRUCTURA:
+- Node.js + Express (backend)
+- PostgreSQL (base de datos)
+- React (frontend)
+- Jest (testing)
+- Git + GitHub (versionado)
+
+📊 CAPACIDAD:
+Capacidad total: 40 puntos/semana × 2 semanas = 80 puntos
+Historias asignadas: 65 puntos
+Buffer: 15 puntos (18% - RECOMENDADO)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CEREMONIAS DEL SPRINT:
+
+📅 LUNES 2026-07-22 - 09:00: SPRINT PLANNING (2 horas)
+- Revisión del backlog
+- Selección de historias
+- Asignación de tareas
+- Estimación de esfuerzo
+
+📅 MARTES-VIERNES - 09:30: DAILY STANDUP (15 minutos)
+- ¿Qué hice ayer?
+- ¿Qué haré hoy?
+- ¿Hay impedimentos?
+
+📅 JUEVES 2026-07-31 - 14:00: SPRINT REVIEW (1.5 horas)
+- Demostración de funcionalidades
+- Feedback de stakeholders
+- Aceptación de historias
+
+📅 VIERNES 2026-08-02 - 15:00: RETROSPECTIVA (1 hora)
+- ¿Qué fue bien?
+- ¿Qué mejorar?
+- ¿Compromisos para próximo sprint?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CRITERIOS DE ÉXITO DEL SPRINT:
+
+✅ Implementadas todas las historias de autenticación (Tasks 1.1-1.3)
+✅ Implementadas todas las historias de eventos base (Tasks 2.1-2.3)
+✅ Implementadas historias de registro (Tasks 3.1-3.2)
+✅ UI funcional para login y listado (Tasks 6.1-6.2)
+✅ Cobertura de tests ≥ 60%
+✅ Cero deuda técnica crítica
+✅ Documentación del API actualizada
+✅ Ambiente de staging funcional
+
+DEFINICIÓN DE HECHO (DoD):
+- Código escrito y revisado (2 aprobaciones mínimo)
+- Tests unitarios pasan (>80% cobertura)
+- Tests de integración pasan
+- Tests E2E ejecutados manualmente
+- Documentación actualizada
+- No hay warnings de linter
+- Performance aceptable (< 2seg respuesta)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RIESGOS IDENTIFICADOS:
+
+⚠️ RIESGO 1: Complejidad de JWT/autenticación
+Probabilidad: Media
+Impacto: Alto
+Mitigación: Spike de 2 horas día 1, usar librerías probadas
+
+⚠️ RIESGO 2: Integración Frontend-Backend
+Probabilidad: Media
+Impacto: Medio
+Mitigación: API mockeada desde día 1, testing temprano
+
+⚠️ RIESGO 3: Base de datos scaling
+Probabilidad: Baja
+Impacto: Medio
+Mitigación: Índices desde diseño, pruebas de carga
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PLAN B (Si Sprint toma más tiempo):
+
+REDUCIR A: 50 puntos
+- Eliminar Task 6.3 (Detalle evento) → Sprint 2
+- Simplificar Task 6.2 (Listado básico sin filtros avanzados)
+
+IMPACTO: MVP será más simple pero funcional
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+=== PREGUNTAS CLAVE DEL SPRINT ===
+
+❓ PREGUNTA 1: ¿Qué 2 tareas del backlog harías primero?
+
+RESPUESTA:
+1. TASK 1.1: Crear modelo de usuarios en base de datos (5 puntos)
+2. TASK 2.1: Crear modelo de eventos (5 puntos)
+
+JUSTIFICACIÓN:
+Estas dos tareas son las FUNDAMENTALES del proyecto porque:
+
+✓ SIN USUARIOS: No hay quién interactúe con el sistema
+  - Base para autenticación, permisos y trazabilidad
+  - Permite identificar quién crea eventos, se registra, participa
+  - Esencial para historial, auditoría y reportes
+
+✓ SIN EVENTOS: No hay qué gestionar
+  - Es la entidad principal del sistema
+  - Todas las otras funcionalidades dependen de eventos existentes
+  - Registros, notificaciones, reportes giran alrededor de eventos
+
+IMPACTO EN CADENA:
+Task 1.1 → Habilita Task 1.2 (Autenticación) → Permite Task 1.3 (Middleware)
+Task 2.1 → Habilita Task 2.2 (Crear) y Task 2.3 (Listar)
+Ambas → Permiten Tasks 3.1-3.2 (Registro en eventos)
+
+Son las "piedras angulares" del MVP. Sin estas, todo lo demás es imposible.
+
+---
+
+❓ PREGUNTA 2: ¿Por qué son las más importantes?
+
+RESPUESTA:
+Por orden de importancia:
+
+🏆 CRÍTICO (sin estas no hay nada):
+1. Usuarios: Identidad y autenticación del sistema
+2. Eventos: Núcleo funcional del negocio
+
+🔑 ALTO (dependen de las anteriores):
+3. Autenticación: Proteger acceso
+4. APIs básicas: Listar y crear eventos
+
+📊 MEDIO:
+5. Registro en eventos: Funcionalidad derivada
+6. Interfaz: Visualización
+
+📈 BAJO:
+7. Notificaciones: Mejora de experiencia
+8. Reportes: Análisis posterior
+
+INTERDEPENDENCIAS:
+Usuarios ←→ Eventos = Relación 1:N
+Usuarios ←→ Registro = Relación M:N (vía Eventos)
+Eventos ←→ Notificaciones = Disparador
+Registros ←→ Reportes = Base de datos
+
+Sin los dos primeros, el sistema no funciona.
+El resto mejora la experiencia pero son secundarios.
+
+---
+
+❓ PREGUNTA 3: ¿Qué significa para ti que una tarea esté "terminada"?
+
+RESPUESTA - DEFINICIÓN DE HECHO (DoD):
+
+Una tarea está TERMINADA cuando cumple TODOS estos criterios:
+
+1️⃣ FUNCIONA CORRECTAMENTE:
+   ✓ Código compilado sin errores
+   ✓ Lógica implementada según especificación
+   ✓ No hay excepciones no capturadas
+   ✓ Comportamiento esperado en casos normales
+
+2️⃣ FUE PROBADA ADECUADAMENTE:
+   ✓ Tests unitarios escritos y pasando (≥80% cobertura)
+   ✓ Tests de integración ejecutados
+   ✓ Validación manual de flujos críticos
+   ✓ Casos de error probados
+
+3️⃣ QUEDÓ REGISTRADA EN GIT:
+   ✓ Commit con mensaje descriptivo
+   ✓ PR creado con descripción
+   ✓ 2 aprobaciones de code review
+   ✓ Sin conflictos pendientes
+   ✓ Mergeada a rama develop
+
+4️⃣ DOCUMENTACIÓN COMPLETA:
+   ✓ Código comentado en partes complejas
+   ✓ README actualizado
+   ✓ API documentada (si aplica)
+   ✓ Cambios en base de datos documentados
+
+5️⃣ CALIDAD Y PERFORMANCE:
+   ✓ Sin warnings de linter
+   ✓ Código sigue estándares del proyecto
+   ✓ Respuesta < 2 segundos (APIs)
+   ✓ Sin deuda técnica
+
+6️⃣ ACEPTACIÓN POR STAKEHOLDER:
+   ✓ Product Owner revisó funcionalidad
+   ✓ Cumple criterios de aceptación
+   ✓ Pasa test de usuario
+   ✓ Demostración en Sprint Review
+
+CHECKLIST SIMPLE:
+☑ Funciona correctamente
+☑ Está probada (tests pasando)
+☑ Está en Git (code review aprobado)
+☑ Documentada
+☑ Sin deuda técnica
+☑ Aceptada por Product Owner
+
+CUANDO ALGO NO CUMPLE ESTO:
+❌ NO está terminada → Vuelve a backlog
+❌ NO se cuenta en velocidad del sprint
+❌ Se debe completar antes de siguiente sprint
+❌ Se retrasa salida a producción
+
+EJEMPLO:
+✓ TERMINADA: Endpoint POST /api/users creado, testado, mergeado, documentado, revisado
+❌ NO TERMINADA: Endpoint creado pero sin tests o sin review
+❌ NO TERMINADA: Tests pasando pero código no documentado
+
+---
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SPRINT 2: NOTIFICACIONES Y REPORTES
+(Planificación posterior a retrospectiva de Sprint 1)
+
+Estimado: Épicas 4 y 5 = 48 puntos
+Próximo Sprint Planning: 2026-08-05
+
+---
+Última actualización: 2026-07-16

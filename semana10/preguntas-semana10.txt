@@ -1,0 +1,61 @@
+PREGUNTAS DE SELECCIÓN MÚLTIPLE - SEMANA 10
+
+=== Pregunta 1 ===
+¿Qué es un backlog en un proyecto de software?
+
+a) Un error del servidor.
+b) Una lista priorizada de tareas o funcionalidades por desarrollar.
+c) Una carpeta del sistema operativo.
+d) Un archivo PDF.
+
+RESPUESTA: b) Una lista priorizada de tareas o funcionalidades por desarrollar.
+
+JUSTIFICACIÓN:
+El backlog es un elemento fundamental en metodologías ágiles como Scrum. Representa una lista ordenada por prioridad de todas las funcionalidades, mejoras y correcciones que deben implementarse en el proyecto. Es dinámico y se va refinando constantemente durante el desarrollo.
+
+---
+
+=== Pregunta 2 ===
+¿Qué describe mejor una historia de usuario?
+
+a) Una foto del proyecto.
+b) Una forma breve de expresar qué necesita un usuario y para qué lo necesita.
+c) Un comando de terminal.
+d) Un tipo de base de datos.
+
+RESPUESTA: b) Una forma breve de expresar qué necesita un usuario y para qué lo necesita.
+
+JUSTIFICACIÓN:
+Las historias de usuario son una técnica en desarrollo ágil que describe una funcionalidad desde la perspectiva del usuario final. Siguen el formato: "Como [rol], quiero [funcionalidad], para [beneficio]". Esto asegura que el desarrollo esté centrado en las necesidades reales del usuario.
+
+---
+
+=== Pregunta 3 ===
+¿Cuál es el propósito principal de n8n en esta semana?
+
+a) Diseñar interfaces gráficas avanzadas.
+b) Automatizar tareas repetitivas y notificaciones de seguimiento no sensibles.
+c) Reemplazar completamente Node.js.
+d) Crear sistemas operativos.
+
+RESPUESTA: b) Automatizar tareas repetitivas y notificaciones de seguimiento no sensibles.
+
+JUSTIFICACIÓN:
+n8n es una plataforma de automatización de flujos de trabajo que permite conectar diferentes aplicaciones y servicios sin escribir código (o escribiendo poco). Es ideal para automatizar procesos repetitivos, como envíos de notificaciones, sincronización de datos y gestión de flujos de trabajo.
+
+---
+
+=== Pregunta 4 ===
+¿Para qué puede servir Telegram en esta semana?
+
+a) Solo para enviar stickers.
+b) Como canal de coordinación, convocatoria y notificación comunitaria.
+c) Para reemplazar Git.
+d) Para instalar bases de datos.
+
+RESPUESTA: b) Como canal de coordinación, convocatoria y notificación comunitaria.
+
+JUSTIFICACIÓN:
+Telegram es una herramienta de comunicación versátil que, en contextos de desarrollo y proyectos, puede ser utilizada como canal de coordinación entre equipos, para enviar notificaciones sobre eventos del proyecto, convocar reuniones y mantener comunicación ágil con la comunidad. Su integración con bots permite automatizar notificaciones desde sistemas externos.
+
+---

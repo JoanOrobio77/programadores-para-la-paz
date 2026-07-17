@@ -1,0 +1,401 @@
+AUTENTICACIÓN Y AUTORIZACIÓN - SEMANA 11
+Plataforma Ciudadana Segura
+
+=== FLUJO DE AUTENTICACIÓN ===
+
+REGISTRO DE NUEVO USUARIO:
+
+PASO 1: Usuario ingresa datos
+- Email: ciudadano@ejemplo.com
+- Contraseña: MiContraseña123! (temporal)
+- Nombre: Juan Ciudadano
+
+PASO 2: Validación en cliente
+- ✓ Email válido (contiene @)
+- ✓ Contraseña > 8 caracteres
+- ✓ Nombre no vacío
+
+PASO 3: Envío seguro (HTTPS)
+POST /api/auth/register
+{
+  "email": "ciudadano@ejemplo.com",
+  "password": "MiContraseña123!",
+  "nombre": "Juan Ciudadano"
+}
+
+PASO 4: Validación en servidor
+- ✓ Email no existe en BD
+- ✓ Contraseña cumple políticas
+- ✓ Validar formato de entrada
+
+PASO 5: Procesamiento seguro
+- Hashear contraseña con bcrypt (salt rounds: 10)
+  password_hash = bcrypt.hash("MiContraseña123!")
+  Resultado: $2b$10$N9qo8uLOickgx2ZMRZoMye...
+
+- Crear registro en BD (sin guardar contraseña original)
+- Generar token de verificación de email (opcional)
+
+PASO 6: Respuesta
+{
+  "status": "success",
+  "message": "Usuario registrado. Verifica tu email.",
+  "user_id": 123
+}
+
+NOTA: La contraseña NUNCA se devuelve en la respuesta
+
+---
+
+INICIACIÓN DE SESIÓN (LOGIN):
+
+PASO 1: Usuario ingresa credenciales
+- Email: ciudadano@ejemplo.com
+- Contraseña: MiContraseña123!
+
+PASO 2: Envío HTTPS
+POST /api/auth/login
+{
+  "email": "ciudadano@ejemplo.com",
+  "password": "MiContraseña123!"
+}
+
+PASO 3: Búsqueda en BD
+SELECT * FROM usuarios WHERE email = 'ciudadano@ejemplo.com'
+
+PASO 4: Verificación de contraseña
+password_ingresada = "MiContraseña123!"
+password_hash_bd = "$2b$10$N9qo8uLOickgx2ZMRZoMye..."
+
+Comparación: bcrypt.compare(password_ingresada, password_hash_bd)
+Resultado: true/false (no revela hash)
+
+PASO 5: Si credentials válidas → Generar JWT
+jwt.sign({
+  user_id: 123,
+  email: 'ciudadano@ejemplo.com',
+  rol: 'ciudadano'
+}, SECRET_KEY, { expiresIn: '7d' })
+
+Token generado:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMjN9...
+
+PASO 6: Respuesta al cliente
+{
+  "status": "success",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 123,
+    "email": "ciudadano@ejemplo.com",
+    "nombre": "Juan Ciudadano",
+    "rol": "ciudadano"
+  }
+}
+
+PASO 7: Cliente almacena token
+localStorage.setItem('auth_token', token)
+
+---
+
+=== FLUJO DE AUTORIZACIÓN ===
+
+VERIFICACIÓN EN CADA PETICIÓN:
+
+PASO 1: Cliente realiza petición
+GET /api/eventos
+Headers: {
+  Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+PASO 2: Servidor verifica token
+- Extrae token del header Authorization
+- Valida formato "Bearer <token>"
+- Decodifica JWT con SECRET_KEY
+- Verifica que no esté expirado
+
+PASO 3: Extrae información del token
+{
+  user_id: 123,
+  email: 'ciudadano@ejemplo.com',
+  rol: 'ciudadano',
+  iat: 1721125800,
+  exp: 1721730600
+}
+
+PASO 4: Valida permiso
+Según rol:
+- ciudadano: Puede ver eventos, reportar incidencias, registrarse
+- coordinador: Puede crear eventos, actualizar incidencias
+- administrador: Acceso total
+
+PASO 5: Si autorizado
+req.user = { id: 123, rol: 'ciudadano' }
+Continúa con lógica
+
+PASO 6: Si NO autorizado
+{
+  "status": "error",
+  "message": "No autorizado para esta acción"
+}
+HTTP 403 Forbidden
+
+---
+
+=== CONTROL DE ACCESO POR ROL ===
+
+ROL: CIUDADANO
+Permisos:
+✓ Ver eventos públicos
+✓ Registrarse en eventos
+✓ Crear incidencias
+✓ Ver estado de sus incidencias
+✓ Ver su perfil
+✗ No puede: Crear eventos, moderar, ver reportes de otros
+
+Rutas protegidas:
+- GET /api/eventos
+- POST /api/eventos/:id/register
+- POST /api/incidencias
+- GET /api/incidencias/mios
+
+---
+
+ROL: COORDINADOR
+Permisos:
+✓ Ver todos los eventos
+✓ Crear nuevos eventos
+✓ Ver todas las incidencias
+✓ Actualizar estado de incidencias
+✓ Enviar notificaciones
+✗ No puede: Eliminar usuarios, cambiar roles
+
+Rutas protegidas:
+- POST /api/eventos (crear)
+- GET /api/incidencias (todas)
+- PATCH /api/incidencias/:id/status
+- POST /api/notificaciones
+
+---
+
+ROL: ADMINISTRADOR
+Permisos:
+✓ Acceso total a todo
+✓ Gestionar usuarios
+✓ Cambiar roles
+✓ Ver auditoría
+✓ Configurar sistema
+
+Rutas protegidas:
+- DELETE /api/usuarios/:id
+- PATCH /api/usuarios/:id/rol
+- GET /api/admin/auditoria
+- POST /api/admin/config
+
+---
+
+=== PROTECCIÓN CONTRA ATAQUES COMUNES ===
+
+ATAQUE: Fuerza Bruta (intentar muchos logins)
+PROTECCIÓN:
+- Limitar intentos de login (ej: 5 intentos en 15 minutos)
+- Bloquear temporalmente la cuenta
+- Alertar al usuario de intentos fallidos
+
+if (failed_attempts > 5 in 15min) {
+  return { status: 'error', message: 'Cuenta bloqueada' }
+}
+
+---
+
+ATAQUE: SQL Injection
+PROTECCIÓN:
+- Usar prepared statements (parameterized queries)
+- NO concatenar strings en queries
+
+MALO ❌
+query = "SELECT * FROM usuarios WHERE email = '" + email + "'"
+
+BUENO ✓
+query = "SELECT * FROM usuarios WHERE email = $1"
+db.query(query, [email])
+
+---
+
+ATAQUE: Token secuestrado (XSS)
+PROTECCIÓN:
+- Almacenar token en httpOnly cookie (no localStorage)
+- Usar CSP (Content Security Policy)
+- Validar origen de peticiones
+
+Token en httpOnly cookie:
+res.cookie('auth_token', token, {
+  httpOnly: true,
+  secure: true,  // Solo HTTPS
+  sameSite: 'Strict'
+})
+
+---
+
+ATAQUE: CSRF (Cross-Site Request Forgery)
+PROTECCIÓN:
+- Usar CSRF tokens
+- Validar origen (SameSite)
+- Métodos seguros: Solo GET para lectura, POST/PUT/DELETE requieren token
+
+<form method="POST" action="/api/incidencias/actualizar">
+  <input type="hidden" name="csrf_token" value="abc123xyz">
+</form>
+
+---
+
+ATAQUE: Contraseña débil
+PROTECCIÓN:
+- Políticas de contraseña:
+  ✓ Mínimo 8 caracteres
+  ✓ Mayúscula, minúscula, número, símbolo
+  ✓ No usar palabras comunes
+  ✓ No reutilizar últimas 5 contraseñas
+
+if (password.length < 8 || !has_uppercase || !has_number) {
+  return { status: 'error', message: 'Contraseña no cumple requisitos' }
+}
+
+---
+
+=== MANEJO DE SESIÓN ===
+
+EXPIRACIÓN DE TOKEN:
+- Token JWT válido por: 7 días
+- Refresh token válido por: 30 días
+
+Cuando token expira:
+1. Cliente intenta usar token expirado
+2. Servidor responde: 401 Unauthorized
+3. Cliente puede:
+   a) Usar refresh token para obtener nuevo JWT
+   b) Redirigir a login
+
+REFRESH TOKEN:
+POST /api/auth/refresh
+Body: { refresh_token: "xyz123" }
+
+Response:
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires_in": 604800
+}
+
+---
+
+CIERRE DE SESIÓN (LOGOUT):
+POST /api/auth/logout
+Headers: { Authorization: "Bearer ..." }
+
+Acciones:
+1. Agregar token a lista negra (blacklist)
+2. Limpiar refresh token
+3. Eliminar cookie (si aplica)
+4. Respuesta: { status: 'success', message: 'Sesión cerrada' }
+
+Cliente:
+- Elimina token de localStorage
+- Redirige a página de login
+
+---
+
+=== ENCRIPTACIÓN Y HASHING ===
+
+CONTRASEÑAS (usar Hashing, NO encriptación):
+- Algoritmo: bcrypt (o Argon2)
+- Salt rounds: 10
+- Irreversible: Solo se puede verificar
+
+Ejemplo:
+input: "MiContraseña123!"
+bcrypt hash: $2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcga7V02PsSGHS4p8CrKrBRe4bm
+
+---
+
+DATOS SENSIBLES EN TRÁNSITO:
+- Protocolo: HTTPS/TLS 1.3
+- Encriptación: AES-256
+- Certificado: Let's Encrypt o similar
+
+---
+
+DATOS EN REPOSO (Base de datos):
+- Contraseñas: Hashadas (no se encriptan)
+- Otros datos sensibles: Encriptados si es necesario
+- Documentos de identidad: Almacenados de forma segregada
+
+---
+
+=== AUDITORÍA Y LOGGING ===
+
+REGISTRAR EVENTOS CRÍTICOS:
+
+Login exitoso:
+{
+  "event": "login_success",
+  "user_id": 123,
+  "email": "ciudadano@ejemplo.com",
+  "timestamp": "2026-07-16T14:30:00Z",
+  "ip": "192.168.1.100"
+}
+
+Login fallido:
+{
+  "event": "login_failed",
+  "email": "ciudadano@ejemplo.com",
+  "reason": "invalid_password",
+  "timestamp": "2026-07-16T14:29:55Z",
+  "ip": "192.168.1.100"
+}
+
+Cambio de permiso:
+{
+  "event": "role_changed",
+  "user_id": 456,
+  "old_role": "ciudadano",
+  "new_role": "coordinador",
+  "changed_by": "admin_id",
+  "timestamp": "2026-07-16T15:00:00Z"
+}
+
+NO REGISTRAR: Contraseñas, tokens completos
+
+---
+
+=== CHECKLIST DE SEGURIDAD ===
+
+ANTES DE PRODUCCIÓN:
+
+Autenticación:
+☑ Contraseñas hasheadas (bcrypt/Argon2)
+☑ JWT con expiración
+☑ Refresh tokens implementados
+☑ HTTPS/TLS habilitado
+
+Autorización:
+☑ Control de acceso por rol
+☑ Validación en servidor (no solo cliente)
+☑ Rutas protegidas requieren token
+☑ Permisos verificados antes de operación
+
+Prevención de ataques:
+☑ Prepared statements (SQL injection)
+☑ Rate limiting (fuerza bruta)
+☑ CSRF tokens
+☑ CSP headers
+☑ Input validation/sanitization
+
+Auditoría:
+☑ Eventos críticos registrados
+☑ Logs no contienen datos sensibles
+☑ Retencion de logs > 90 días
+☑ Alertas ante intentos sospechosos
+
+---
+
+Fecha: 2026-07-16
+Estado: Documentado

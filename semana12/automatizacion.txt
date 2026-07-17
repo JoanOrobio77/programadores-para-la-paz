@@ -1,0 +1,407 @@
+AUTOMATIZACIÓN CON n8n - SEMANA 12
+"Petición en 3 Clics": Flujos Automáticos
+
+=== VISIÓN GENERAL ===
+
+n8n automatiza los procesos que ocurren cuando hay cambios en el sistema
+sin intervención manual. Esto permite a coordinadores enfocarse en 
+difusión y gestión, no en tareas administrativas.
+
+BENEFICIOS:
+✓ Respuestas inmediatas a eventos
+✓ Notificaciones oportunas
+✓ Generación automática de documentos
+✓ Sin errores humanos
+✓ Escalable a múltiples peticiones
+
+---
+
+=== FLUJO 1: NOTIFICACIÓN DE NUEVO APOYO ===
+
+EVENTO: Nuevo apoyo registrado
+DISPARADOR: POST /api/peticiones/{id}/apoyos
+
+PASO A PASO EN n8n:
+
+1. WEBHOOK TRIGGER
+   Escucha: POST /webhook/nuevo-apoyo
+   Recibe:
+   {
+     "peticion_id": 1,
+     "nombre": "Juan Pérez",
+     "email": "juan@ejemplo.com",
+     "total_apoyos": 45
+   }
+
+2. EXTRAER INFORMACIÓN
+   Crear variables:
+   - apoyo_numero = 45
+   - meta = 100
+   - porcentaje = 45/100 = 45%
+   - peticion_titulo = "Mejorar parque central"
+
+3. NOTIFICAR AL ORGANIZADOR (Email)
+   Destinatario: Organizador de petición
+   Asunto: "¡Nuevo apoyo! Tu petición ya tiene 45 apoyos"
+   
+   Cuerpo:
+   ```
+   Hola María,
+   
+   Tu petición "Mejorar parque central" acaba de recibir
+   un nuevo apoyo.
+   
+   Progreso: 45/100 (45%)
+   
+   Apoya en: https://peticion.local/PET-001
+   
+   ¡Vas bien! Sigue compartiéndola.
+   ```
+
+4. PUBLICAR EN TELEGRAM (si llegó a hito)
+   Si porcentaje es 25%, 50%, 75% o 100%:
+   
+   Mensaje al canal:
+   "🎉 Petición 'Mejorar parque central' alcanzó 45 apoyos (45%)"
+   
+   O si completada:
+   "✅ ¡META ALCANZADA! 'Mejorar parque' completó 100 apoyos"
+
+5. REGISTRAR EN AUDITORÍA
+   INSERT INTO automatizacion_log
+   (evento, peticion_id, accion, timestamp)
+   VALUES ('nuevo_apoyo', 1, 'notificacion_enviada', NOW())
+
+---
+
+=== FLUJO 2: HITO ALCANZADO (25%, 50%, 75%, 100%) ===
+
+EVENTO: Se alcanza meta significativa
+DISPARADOR: apoyos_actuales llega a 25, 50, 75 o 100
+
+PASO A PASO EN n8n:
+
+1. VERIFICAR SI HITO
+   Consultar BD:
+   SELECT apoyos_actuales, meta_apoyos FROM peticiones WHERE id = 1
+   
+   Calcular: porcentaje = (apoyos / meta) * 100
+   
+   Si porcentaje es múltiplo de 25: Disparar automatización
+
+2. HITO 25% (Ejemplo: 25/100)
+   ├─ Email al organizador: "¡Cuarta parte completada!"
+   ├─ Mensaje Telegram: "⏰ Petición al 25%"
+   └─ Crear notificación en app
+
+3. HITO 50% (Ejemplo: 50/100)
+   ├─ Email: "¡Mitad de tu meta!"
+   ├─ Telegram: "🔥 Petición al 50%"
+   └─ Enviar recordatorio: "Comparte más"
+
+4. HITO 75% (Ejemplo: 75/100)
+   ├─ Email: "¡Casi lo logras!"
+   ├─ Telegram: "🚀 Petición al 75%"
+   └─ Sugerir: "Intensifica difusión"
+
+5. HITO 100% (Ejemplo: 100/100)
+   ├─ Email celebración: "¡META ALCANZADA!"
+   ├─ Telegram URGENTE: "✅ ¡COMPLETADA!"
+   ├─ Disparar FLUJO 3 (Generar PDF)
+   ├─ Notificar admin
+   └─ Cambiar estado a "completada"
+
+---
+
+=== FLUJO 3: GENERAR PDF AUTOMÁTICAMENTE ===
+
+EVENTO: Petición alcanza meta (100 apoyos)
+DISPARADOR: apoyos_actuales = meta_apoyos
+
+PASO A PASO EN n8n:
+
+1. OBTENER DATOS DE PETICIÓN
+   SELECT * FROM peticiones WHERE id = 1
+   SELECT * FROM apoyos WHERE peticion_id = 1
+   
+   Datos necesarios:
+   - Título, descripción, meta
+   - Lista de 100 firmantes
+   - Fecha de completación
+   - QR de verificación
+
+2. CONSTRUIR CONTENIDO HTML
+   Plantilla:
+   ```html
+   <h1>PETICIÓN CIUDADANA FORMAL</h1>
+   <h2>{{titulo}}</h2>
+   <p>{{descripcion}}</p>
+   <p>Meta alcanzada: 100/100 apoyos</p>
+   <h3>Firmantes:</h3>
+   <ul>
+   {{#each firmantes}}
+     <li>{{nombre}}</li>
+   {{/each}}
+   </ul>
+   <img src="{{qr_code}}" alt="QR">
+   <p>Verificable en: peticion.local/PET-001</p>
+   ```
+
+3. GENERAR PDF
+   Usar librería: puppeteer o pdfkit
+   Input: HTML con datos
+   Output: archivo PDF
+   
+   Comando: 
+   await puppeteer.launch().then(browser => {
+     browser.newPage()
+     page.setContent(html)
+     page.pdf({ path: 'peticion-001.pdf' })
+   })
+
+4. ALMACENAR PDF
+   - Guardar en servidor (/documentos/PET-001.pdf)
+   - Registrar en DB:
+     INSERT INTO documentos_pdf (peticion_id, url, total_apoyos)
+     VALUES (1, '/docs/PET-001.pdf', 100)
+   - Generar URL descargable: peticion.local/docs/PET-001.pdf
+
+5. ENVIAR AL ORGANIZADOR
+   Email con:
+   - Asunto: "¡Tu petición completada! Descarga documento"
+   - Adjunto: PDF
+   - Link: "Descarga aquí: [link]"
+   - Instrucciones: "Usa este PDF para presentación formal"
+
+6. NOTIFICAR A FIRMANTES
+   Enviar email a quienes dieron email:
+   "¡Gracias! Tu apoyo fue crucial. La petición está lista."
+   Adjuntar PDF o link
+
+---
+
+=== FLUJO 4: ENVIAR A TELEGRAM ===
+
+EVENTO: Nuevo hito o evento importante
+DISPARADOR: Evento de petición
+
+PASO A PASO EN n8n:
+
+1. CONECTAR BOT DE TELEGRAM
+   Credenciales (en variables de entorno):
+   - TELEGRAM_BOT_TOKEN = "123456:ABC..."
+   - TELEGRAM_CHAT_ID = "-1001234567890"
+
+2. CONSTRUIR MENSAJE
+   Según tipo de evento:
+   
+   NUEVO APOYO:
+   "👤 Nuevo apoyo en 'Mejorar parque'\nTotal: 45/100"
+   
+   HITO 50%:
+   "🔥 'Mejorar parque' alcanzó 50 apoyos\n50/100 apoyos"
+   
+   META COMPLETADA:
+   "✅ ¡COMPLETADA!\n'Mejorar parque' está lista para presentación"
+
+3. AGREGAR BOTÓN/LINK
+   Si aplica, incluir:
+   - Link a petición: https://peticion.local/PET-001
+   - Botón "Apoyar" (si está activa)
+   - Botón "Ver PDF" (si completada)
+
+4. ENVIAR A TELEGRAM
+   POST https://api.telegram.org/bot{TOKEN}/sendMessage
+   {
+     "chat_id": "-1001234567890",
+     "text": "✅ ¡COMPLETADA!...",
+     "parse_mode": "HTML"
+   }
+
+5. LOGUEAR ENVÍO
+   Registrar:
+   - Qué mensaje se envió
+   - Cuándo
+   - Si fue exitoso
+   - Cualquier error
+
+---
+
+=== FLUJO 5: DETECCIÓN DE SPAM ===
+
+EVENTO: Múltiples apoyos sospechosos
+DISPARADOR: IP repetida o email similar
+
+PASO A PASO EN n8n:
+
+1. VERIFICAR DUPLICADOS
+   - Mismo email intentó apoyar 2+ veces → Rechazar
+   - Misma IP en diferentes peticiones → Alerta
+   - Patrón de nombres similares → Investigar
+
+2. ANALIZAR PATRÓN
+   SELECT ip_address, COUNT(*) 
+   FROM apoyos 
+   WHERE created_at > NOW() - INTERVAL '1 hour'
+   GROUP BY ip_address
+   HAVING COUNT(*) > 5
+   
+   Si IP hizo > 5 apoyos en 1 hora: probable spam
+
+3. NOTIFICAR A ADMIN
+   Email de alerta:
+   "⚠️ POSIBLE SPAM DETECTADO
+   Petición: Mejorar parque
+   IP: 192.168.1.100
+   Apoyos en 1 hora: 8
+   Acción recomendada: Revisar"
+
+4. ACCIONES AUTOMÁTICAS
+   Opciones:
+   a) Bloquear IP temporalmente
+   b) Requerir verificación de email
+   c) Recolectar para revisión manual
+   d) Pausar petición si es grave
+
+5. ENVIAR A TELEGRAM (URGENTE)
+   Mensaje al admin en privado:
+   "🚨 ALERTA: Posible ataque de spam en petición #1"
+
+---
+
+=== FLUJO 6: RECORDATORIO A ORGANIZADOR ===
+
+EVENTO: Petición sin movimiento > 7 días
+DISPARADOR: Cron job cada día
+
+PASO A PASO EN n8n:
+
+1. BUSCAR PETICIONES INACTIVAS
+   SELECT * FROM peticiones 
+   WHERE estado = 'activa' 
+   AND apoyos_actuales < meta_apoyos
+   AND updated_at < NOW() - INTERVAL '7 days'
+
+2. PARA CADA PETICIÓN SIN MOVIMIENTO:
+   Calcular:
+   - Días desde último apoyo
+   - Progreso actual
+   - Falta para completar
+
+3. ENVIAR EMAIL MOTIVADOR
+   Asunto: "Tu petición necesita impulso"
+   Cuerpo:
+   ```
+   Hola María,
+   
+   Tu petición "Mejorar parque" no ha recibido apoyos
+   en 7 días.
+   
+   Progreso: 45/100 (faltan 55)
+   
+   Ideas para aumentar apoyos:
+   - Comparte en grupos de WhatsApp
+   - Pide a amigos que compartan
+   - Crea volante con QR
+   - Publica en redes sociales
+   
+   Link: https://peticion.local/PET-001
+   ```
+
+4. REGISTRAR ENVÍO
+   Guardar fecha de último recordatorio
+
+---
+
+=== FLUJO 7: LIMPIEZA DE DATOS (Mantenimiento) ===
+
+EVENTO: Cron job una vez al mes
+DISPARADOR: 1ero de cada mes
+
+PASO A PASO EN n8n:
+
+1. ELIMINAR BORRADORES ANTIGUOS
+   DELETE FROM peticiones
+   WHERE estado = 'draft'
+   AND created_at < NOW() - INTERVAL '30 days'
+
+2. ARCHIVAR COMPLETADAS
+   UPDATE peticiones
+   SET archived = true
+   WHERE estado = 'completada'
+   AND completed_at < NOW() - INTERVAL '90 days'
+
+3. GENERAR REPORTE MENSUAL
+   Contar:
+   - Nuevas peticiones
+   - Completadas este mes
+   - Total apoyos
+   - Actividad por categoría
+
+4. ENVIAR REPORTE A ADMIN
+   Email con estadísticas mensuales
+
+---
+
+=== CONFIGURACIÓN DE VARIABLES DE ENTORNO ===
+
+.env (NO PUBLICAR ESTO):
+```
+TELEGRAM_BOT_TOKEN=123456:ABCxyz...
+TELEGRAM_CHAT_ID=-1001234567890
+SMTP_USER=noreply@peticion.local
+SMTP_PASSWORD=***hidden***
+DATABASE_URL=postgresql://user:pass@localhost/peticiones
+PDF_STORAGE_PATH=/var/www/documentos/
+MAX_RETRY_ATTEMPTS=3
+RETRY_DELAY_MS=1000
+```
+
+n8n accede a estas variables de forma segura.
+
+---
+
+=== MONITOREO DE FLUJOS ===
+
+Dashboard en n8n muestra:
+- Flujos ejecutados hoy
+- Errores ocurridos
+- Tiempo promedio de ejecución
+- Tasa de éxito
+
+Alertas configuradas:
+- Flujo falla 3+ veces: Notificar admin
+- Petición spam detectada: Alerta inmediata
+- PDF no se genera: Reintento + notificación
+
+---
+
+=== CHECKLIST DE AUTOMATIZACIÓN ===
+
+ANTES DE PRODUCCIÓN:
+
+Flujos implementados:
+☑ Notificación de nuevo apoyo
+☑ Hitos (25%, 50%, 75%, 100%)
+☑ Generación automática de PDF
+☑ Integración con Telegram
+☑ Detección de spam
+☑ Recordatorios inactivos
+☑ Limpieza mensual
+
+Seguridad:
+☑ Credenciales en .env (no en código)
+☑ HTTPS en todos los webhooks
+☑ Validación de entrada
+☑ Rate limiting en APIs
+
+Monitoreo:
+☑ Logs de ejecución
+☑ Alertas de error
+☑ Dashboard en n8n
+☑ Auditoría de cambios
+
+---
+
+Fecha: 2026-07-16
+Estado: Documentado

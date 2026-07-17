@@ -1,0 +1,237 @@
+PREGUNTAS DE SELECCIÓN MÚLTIPLE - SEMANA 12
+"Petición en 3 Clics": Herramienta Comunitaria
+
+=== Pregunta 1 ===
+¿Qué representa el sistema "Petición en 3 Clics"?
+
+a) Un videojuego
+b) Una herramienta simple para que una comunidad registre apoyos a una causa y genere una petición formal
+c) Un editor de texto
+d) Un sistema operativo
+
+RESPUESTA: b) Una herramienta simple para que una comunidad registre apoyos a una causa y genere una petición formal
+
+JUSTIFICACIÓN:
+"Petición en 3 Clics" es un ejemplo práctico de plataforma ciudadana que:
+
+1. DEMOCRATIZA LA PARTICIPACIÓN:
+   - Cualquier ciudadano (sin conocimientos técnicos) puede usar
+   - Interfaz intuitiva y simple
+   - No requiere registros complejos
+
+2. REGISTRA APOYOS:
+   - Ciudadanos respaldan una causa
+   - Cada click = un apoyo/firma
+   - Genera evidencia del consenso comunitario
+
+3. GENERA PETICIÓN FORMAL:
+   - Convierte apoyos en documento oficial
+   - Exporta a PDF con todas las firmas
+   - Listo para presentar ante autoridades
+
+4. CAPACITA PARA ACCIÓN:
+   - Muestra poder de organización colectiva
+   - Empodera a la comunidad
+   - Canaliza demandas de forma estructurada
+
+CASOS DE USO:
+- Comunidad pide mejora de parque
+- Ciudadanos piden aumento de buses
+- Vecinos denuncian problema de seguridad
+- Jóvenes piden espacio para actividades
+
+El sistema transforma clics individuales en poder colectivo.
+
+---
+
+=== Pregunta 2 ===
+¿Cuál es el propósito de generar un documento PDF automáticamente en una plataforma?
+
+a) Decorar la aplicación
+b) Convertir información registrada en un documento formal que pueda ser compartido o presentado
+c) Aumentar el tamaño del sistema
+d) Eliminar datos del servidor
+
+RESPUESTA: b) Convertir información registrada en un documento formal que pueda ser compartido o presentado
+
+JUSTIFICACIÓN:
+Generar PDF automáticamente tiene propósitos muy específicos y valiosos:
+
+1. FORMALIDAD LEGAL:
+   - PDF impreso tiene peso legal
+   - No puede ser modificado fácilmente
+   - Evidencia clara y verificable
+
+2. PORTABILIDAD:
+   - Se comparte por email, WhatsApp, etc.
+   - Funciona sin internet
+   - Compatible con cualquier dispositivo
+
+3. PRESENTACIÓN:
+   - Ante autoridades municipales
+   - En reuniones públicas
+   - Medios de comunicación
+   - Solicitudes formales
+
+4. PERMANENCIA:
+   - Registro histórico
+   - Archivable
+   - No depende de conexión a internet
+
+EJEMPLO EN PETICIÓN EN 3 CLICS:
+```
+PDF generado contiene:
+- Título de la petición
+- Descripción de la causa
+- Número total de apoyos
+- Listado de nombres de quienes apoyan
+- Fecha de creación
+- QR para verificación
+- Firma digital (opcional)
+```
+
+Este PDF es el PRODUCTO FINAL que la comunidad 
+presenta a autoridades para lograr cambio.
+
+---
+
+=== Pregunta 3 ===
+¿Por qué es importante minimizar los datos personales en sistemas comunitarios?
+
+a) Para evitar almacenar información innecesaria o sensible
+b) Para eliminar usuarios del sistema
+c) Para instalar programas
+d) Para evitar usar bases de datos
+
+RESPUESTA: a) Para evitar almacenar información innecesaria o sensible
+
+JUSTIFICACIÓN:
+Minimizar datos personales es principio fundamental de privacidad:
+
+1. PRIVACIDAD Y PROTECCIÓN:
+   - Menos datos = menos riesgo de exposición
+   - Si el servidor es hackeado: Daño limitado
+   - Cumple GDPR ("minimización de datos")
+
+2. CONFIANZA COMUNITARIA:
+   - Ciudadanos desconfían si piden muchos datos
+   - "¿Por qué necesitan mi dirección?"
+   - Confianza = usuarios
+   - Desconfianza = abandono
+
+3. RESPONSABILIDAD LEGAL:
+   - Almacenar datos = responsabilidad
+   - Más datos = más riesgo legal
+   - Si hay incidente de privacidad: "¿Porqué guardaban eso?"
+
+4. EFICIENCIA OPERACIONAL:
+   - Menos datos = procesamiento más rápido
+   - Menos almacenamiento = costos bajos
+   - Sistema más ágil
+
+EN PETICIÓN EN 3 CLICS - MINIMIZAR:
+
+NECESARIO ✓
+- Nombre (o iniciales)
+- Email (solo para confirmación)
+- Fecha de apoyo
+- Comentario (opcional)
+
+INNECESARIO ❌
+- Documento de identidad
+- Dirección completa
+- Teléfono
+- Empleador
+- Historial de compras
+- Información biométrica
+
+"Cuanto menos datos, mejor"
+
+---
+
+=== Pregunta 4 ===
+¿Qué función puede cumplir n8n o Telegram en una plataforma comunitaria?
+
+a) Enviar notificaciones automáticas cuando ocurre un evento en el sistema
+b) Reemplazar la base de datos
+c) Crear sistemas operativos
+d) Instalar servidores
+
+RESPUESTA: a) Enviar notificaciones automáticas cuando ocurre un evento en el sistema
+
+JUSTIFICACIÓN:
+n8n y Telegram son herramientas de automatización y comunicación:
+
+1. NOTIFICACIONES EN TIEMPO REAL:
+   - Usuario firma petición → notificación al admin
+   - Se alcanza hito de apoyos → alerta a coordinadores
+   - Petición rechazada → notificación a firmantes
+   - Nueva petición → anuncio en comunidad
+
+2. TELEGRAM COMO CANAL:
+   - Aplicación popular y accesible
+   - Notificaciones push inmediatas
+   - Grupo privado para coordinadores
+   - Canal público para anuncios
+
+3. n8n COMO ORQUESTADOR:
+   - Conecta plataforma con Telegram
+   - Automatiza flujos sin código
+   - Procesa eventos y dispara acciones
+   - Integra múltiples servicios
+
+EJEMPLO DE FLUJO EN PETICIÓN EN 3 CLICS:
+
+Evento 1: Nuevo apoyo
+Trigger: POST /api/apoyos/new
+Action: Enviar mensaje Telegram
+Mensaje: "🎉 Nuevo apoyo! Total: 45/100"
+
+Evento 2: Hito alcanzado
+Trigger: Apoyos = 50 (50% meta)
+Action: Notificar grupo coordinadores
+Mensaje: "⚠️ 50% de apoyos alcanzado. Preparar presentación"
+
+Evento 3: Petición lista
+Trigger: Apoyos = 100 (meta completa)
+Action: Generar PDF + enviar a admin
+Action: Notificar a todos los firmantes
+Mensaje: "✅ Petición lista. Presentación el viernes"
+
+BENEFICIO:
+Mantiene comunidad informada y coordinada
+sin intervención manual constante.
+
+---
+
+RESUMEN DE RESPUESTAS:
+1. b) Herramienta para registrar apoyos y generar petición formal
+2. b) Convertir información en documento formal compartible
+3. a) Evitar almacenar información innecesaria o sensible
+4. a) Enviar notificaciones automáticas de eventos
+
+PUNTUACIÓN: 4/4 correctas ✅
+
+---
+
+CONCEPTOS CONEXOS:
+
+PLATAFORMA CIUDADANA:
+- Petición en 3 Clics es ejemplo de democratización
+- Reduce barreras de entrada
+- Empodera a ciudadanos
+
+DATOS Y PRIVACIDAD:
+- Minimizar datos = responsabilidad ética
+- GDPR = ley internacional
+- Confianza = activo más valioso
+
+AUTOMATIZACIÓN:
+- n8n simplifica integración de sistemas
+- Telegram alcanza a la comunidad donde está
+- Notificaciones = engagement
+
+---
+
+Fecha: 2026-07-16
+Estado: Completado
